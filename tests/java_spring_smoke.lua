@@ -1,7 +1,8 @@
 local java_file = vim.env.JAVA_SPRING_SMOKE_FILE
-assert(java_file and java_file ~= "", "JAVA_SPRING_SMOKE_FILE is required")
-
-vim.cmd.edit(vim.fn.fnameescape(java_file))
+if java_file and java_file ~= "" and vim.api.nvim_buf_get_name(0) ~= java_file then
+  vim.cmd.edit(vim.fn.fnameescape(java_file))
+end
+assert(vim.bo.filetype == "java", "The current buffer must be a Java file")
 assert(
   vim.wait(20000, function()
     return vim.lsp.get_clients({ bufnr = 0, name = "jdtls" })[1] ~= nil

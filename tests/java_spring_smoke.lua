@@ -14,15 +14,15 @@ assert(require("overseer"), "Overseer did not load")
 assert(require("dap").adapters.java, "Java DAP adapter is not configured")
 
 local expected = {
-  ["<Space>jp"] = "Select Spring Profile",
-  ["<Space>jr"] = "Run Spring Boot",
-  ["<Space>jd"] = "Debug Java Main Class",
-  ["<Space>ja"] = "Attach Remote JVM",
-  ["<Space>tt"] = "Run All Test",
-  ["<Space>tr"] = "Run Nearest Test",
-  ["<Space>tT"] = "Run Test",
-  ["<Space>td"] = "Debug Nearest Test",
-  ["<Space>tl"] = "Rerun Last Java Test/Debug",
+  [" jp"] = "Select Spring Profile",
+  [" jr"] = "Run Spring Boot",
+  [" jd"] = "Debug Java Main Class",
+  [" ja"] = "Attach Remote JVM",
+  [" tt"] = "Run All Test",
+  [" tr"] = "Run Nearest Test",
+  [" tT"] = "Run Test",
+  [" td"] = "Debug Nearest Test",
+  [" tl"] = "Rerun Last Java Test/Debug",
 }
 local mappings = {}
 for _, mapping in ipairs(vim.api.nvim_buf_get_keymap(0, "n")) do

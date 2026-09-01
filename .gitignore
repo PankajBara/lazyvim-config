@@ -1,0 +1,35 @@
+# Local/editor state
+*.swp
+*.swo
+*.swn
+*.tmp
+*.bak
+*~
+.repro
+debug
+foo.*
+tt.*
+
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+credentials*
+secrets*
+
+# Logs, caches, and generated state
+*.log
+data/
+cache/
+cachedir/
+tmp/
+temp/
+.cache/
+.local/
+doc/tags
+.tests

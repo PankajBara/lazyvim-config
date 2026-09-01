@@ -1,26 +1,26 @@
-local function root()
-  return vim.fs.root(0, { "pom.xml", "mvnw", "build.gradle", "build.gradle.kts", "gradlew" }) or vim.uv.cwd()
-end
-
-local function executable(kind, cwd)
-  local wrapper = kind == "maven" and "mvnw" or "gradlew"
-  local fallback = kind == "maven" and "mvn" or "gradle"
-  return vim.fn.executable(cwd .. "/" .. wrapper) == 1 and (cwd .. "/" .. wrapper) or fallback
-end
+local spring = require("spring_project")
 
 return {
   name = "Java/Spring build",
   generator = function(_, cb)
-    local cwd = root()
+    local cwd = spring.root(0)
     local tasks = {}
-    local function add(name, kind, arg)
+    if not cwd then
+      cb(tasks)
+      return
+    end
+    local function add(name, cmd, args, env)
+      if not cmd then
+        return
+      end
       tasks[#tasks + 1] = {
         name = name,
         builder = function()
           return {
-            cmd = executable(kind, cwd),
-            args = { arg },
+            cmd = cmd,
+            args = args,
             cwd = cwd,
+            env = env,
             components = {
               { "open_output", on_start = "always", direction = "horizontal", focus = true },
               "default",
@@ -29,19 +29,18 @@ return {
         end,
       }
     end
-    if vim.uv.fs_stat(cwd .. "/pom.xml") then
-      add("Spring Boot: Maven Run", "maven", "spring-boot:run")
-      add("Maven Test", "maven", "test")
-      add("Maven Package", "maven", "package")
-    end
-    if vim.uv.fs_stat(cwd .. "/build.gradle") or vim.uv.fs_stat(cwd .. "/build.gradle.kts") then
-      add("Spring Boot: Gradle Run", "gradle", "bootRun")
-      add("Gradle Test", "gradle", "test")
-      add("Gradle Build", "gradle", "build")
+    local cmd = spring.command(cwd)
+    local kind = spring.kind(cwd)
+    if kind == "maven" then
+      add("Spring Boot: Maven Run", cmd, { "spring-boot:run" }, spring.env(cwd))
+      add("Maven Test", cmd, { "test" })
+      add("Maven Package", cmd, { "package" })
+    elseif kind == "gradle" then
+      add("Spring Boot: Gradle Run", cmd, { "bootRun" }, spring.env(cwd))
+      add("Gradle Test", cmd, { "test" })
+      add("Gradle Build", cmd, { "build" })
     end
     cb(tasks)
   end,
-  condition = { callback = function() return vim.uv.fs_stat(root() .. "/pom.xml") ~= nil
-    or vim.uv.fs_stat(root() .. "/build.gradle") ~= nil
-    or vim.uv.fs_stat(root() .. "/build.gradle.kts") ~= nil end },
+  condition = { callback = function() return spring.root(0) ~= nil end },
 }

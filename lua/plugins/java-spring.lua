@@ -65,6 +65,20 @@ return {
         },
       })
       opts.dap = vim.tbl_deep_extend("force", opts.dap or {}, { hotcodereplace = "auto" })
+      opts.on_attach = function(args)
+        local spring = require("spring_project")
+        local map = function(lhs, rhs, desc)
+          vim.keymap.set("n", lhs, rhs, { buffer = args.buf, desc = desc })
+        end
+        map("<leader>jp", function() spring.select_profile(args.buf) end, "Select Spring Profile")
+        map("<leader>jr", function() spring.run(args.buf) end, "Run Spring Boot")
+        map("<leader>jd", function() spring.debug_main(args.buf) end, "Debug Java Main Class")
+        map("<leader>ja", function() spring.attach(args.buf) end, "Attach Remote JVM")
+        map("<leader>td", function()
+          require("jdtls.dap").test_nearest_method({ config_overrides = { noDebug = false } })
+        end, "Debug Nearest Test")
+        map("<leader>tl", function() require("dap").run_last() end, "Rerun Last Java Test/Debug")
+      end
       opts.jdtls = function(config)
         config.init_options = config.init_options or {}
         config.init_options.bundles = config.init_options.bundles or {}

@@ -80,7 +80,8 @@ local function scan_profiles(path, found)
       scan_profiles(child, found)
     elseif entry_type == "file" and path:match("/src/main/resources$") then
       local profile = name:match("^application%-(.+)%.properties$")
-        or name:match("^application%-(.+)%.ya?ml$")
+        or name:match("^application%-(.+)%.yml$")
+        or name:match("^application%-(.+)%.yaml$")
       if profile and profile ~= "" then
         found[profile] = true
       end

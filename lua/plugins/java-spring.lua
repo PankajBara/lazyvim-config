@@ -65,17 +65,36 @@ return {
         },
       })
       opts.dap = vim.tbl_deep_extend("force", opts.dap or {}, { hotcodereplace = "auto" })
+      local previous_on_attach = opts.on_attach
       opts.on_attach = function(args)
+        if previous_on_attach then
+          previous_on_attach(args)
+        end
         local spring = require("spring_project")
         local map = function(lhs, rhs, desc)
           vim.keymap.set("n", lhs, rhs, { buffer = args.buf, desc = desc })
+        end
+        local test_overrides = function()
+          local root = spring.root(args.buf)
+          return root and { env = spring.env(root) } or nil
         end
         map("<leader>jp", function() spring.select_profile(args.buf) end, "Select Spring Profile")
         map("<leader>jr", function() spring.run(args.buf) end, "Run Spring Boot")
         map("<leader>jd", function() spring.debug_main(args.buf) end, "Debug Java Main Class")
         map("<leader>ja", function() spring.attach(args.buf) end, "Attach Remote JVM")
+        map("<leader>tt", function()
+          require("jdtls.dap").test_class({ config_overrides = test_overrides() })
+        end, "Run All Test")
+        map("<leader>tr", function()
+          require("jdtls.dap").test_nearest_method({ config_overrides = test_overrides() })
+        end, "Run Nearest Test")
+        map("<leader>tT", function()
+          require("jdtls.dap").pick_test({ config_overrides = test_overrides() })
+        end, "Run Test")
         map("<leader>td", function()
-          require("jdtls.dap").test_nearest_method({ config_overrides = { noDebug = false } })
+          local overrides = test_overrides() or {}
+          overrides.noDebug = false
+          require("jdtls.dap").test_nearest_method({ config_overrides = overrides })
         end, "Debug Nearest Test")
         map("<leader>tl", function() require("dap").run_last() end, "Rerun Last Java Test/Debug")
       end

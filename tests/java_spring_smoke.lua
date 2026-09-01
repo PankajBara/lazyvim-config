@@ -2,9 +2,12 @@ local java_file = vim.env.JAVA_SPRING_SMOKE_FILE
 assert(java_file and java_file ~= "", "JAVA_SPRING_SMOKE_FILE is required")
 
 vim.cmd.edit(vim.fn.fnameescape(java_file))
-assert(vim.wait(20000, function()
-  return vim.lsp.get_clients({ bufnr = 0, name = "jdtls" })[1] ~= nil
-end, 100), "JDTLS did not attach")
+assert(
+  vim.wait(20000, function()
+    return vim.lsp.get_clients({ bufnr = 0, name = "jdtls" })[1] ~= nil
+  end, 100),
+  "JDTLS did not attach"
+)
 
 assert(require("overseer"), "Overseer did not load")
 assert(require("dap").adapters.java, "Java DAP adapter is not configured")

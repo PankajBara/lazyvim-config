@@ -96,6 +96,9 @@ function M.profiles(root)
   end
   local profiles = vim.tbl_keys(found)
   table.sort(profiles, function(a, b)
+    if a == b then
+      return false
+    end
     return a == "default" or (b ~= "default" and a < b)
   end)
   return profiles
@@ -133,8 +136,9 @@ function M.select_profile(source)
     return
   end
   local profiles = M.profiles(root)
+  local active = M.profile(root)
   vim.ui.select(profiles, { prompt = "Spring profile", format_item = function(item)
-    return item == M.profile(root) and (item .. " (active)") or item
+    return item == active and (item .. " (active)") or item
   end }, function(choice)
     if choice and M.set_profile(root, choice) then
       notify("Profile set to " .. choice, vim.log.levels.INFO)

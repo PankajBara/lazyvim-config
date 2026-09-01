@@ -19,7 +19,11 @@ vim.fn.writefile({}, fixture .. "/maven/target/generated/src/main/resources/appl
 vim.fn.writefile({ "plugins {}" }, fixture .. "/gradle/build.gradle.kts")
 vim.fn.writefile({ "#!/bin/sh" }, fixture .. "/gradle/gradlew")
 
-assert_equal(spring.root(fixture .. "/maven/src/main/resources/application-dev.properties"), fixture .. "/maven", "Maven root")
+assert_equal(
+  spring.root(fixture .. "/maven/src/main/resources/application-dev.properties"),
+  fixture .. "/maven",
+  "Maven root"
+)
 assert_equal(spring.root(fixture .. "/gradle/src/main/resources"), fixture .. "/gradle", "Gradle root")
 assert_equal(spring.profiles(fixture .. "/maven"), { "default", "dev", "prod", "qa" }, "Profile discovery")
 
@@ -65,6 +69,9 @@ assert_equal(spring.profile(fixture .. "/maven"), "default", "Stale profile fall
 assert_equal(spring.env(fixture .. "/maven").SPRING_PROFILES_ACTIVE, "from-dotenv", "Default keeps dotenv profile")
 
 local state = table.concat(vim.fn.readfile(vim.g.spring_project_state_file), "\n")
-assert(not state:find("base", 1, true) and not state:find("local", 1, true), "State must not contain environment values")
+assert(
+  not state:find("base", 1, true) and not state:find("local", 1, true),
+  "State must not contain environment values"
+)
 
 print("spring_project tests: ok")

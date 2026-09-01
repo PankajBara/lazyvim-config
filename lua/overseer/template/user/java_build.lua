@@ -42,5 +42,9 @@ return {
     end
     cb(tasks)
   end,
-  condition = { callback = function() return spring.root(0) ~= nil end },
+  condition = {
+    callback = function()
+      return spring.root(0) ~= nil
+    end,
+  },
 }

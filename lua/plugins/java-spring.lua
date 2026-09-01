@@ -78,10 +78,18 @@ return {
           local root = spring.root(args.buf)
           return root and { env = spring.env(root) } or nil
         end
-        map("<leader>jp", function() spring.select_profile(args.buf) end, "Select Spring Profile")
-        map("<leader>jr", function() spring.run(args.buf) end, "Run Spring Boot")
-        map("<leader>jd", function() spring.debug_main(args.buf) end, "Debug Java Main Class")
-        map("<leader>ja", function() spring.attach(args.buf) end, "Attach Remote JVM")
+        map("<leader>jp", function()
+          spring.select_profile(args.buf)
+        end, "Select Spring Profile")
+        map("<leader>jr", function()
+          spring.run(args.buf)
+        end, "Run Spring Boot")
+        map("<leader>jd", function()
+          spring.debug_main(args.buf)
+        end, "Debug Java Main Class")
+        map("<leader>ja", function()
+          spring.attach(args.buf)
+        end, "Attach Remote JVM")
         map("<leader>tt", function()
           require("jdtls.dap").test_class({ config_overrides = test_overrides() })
         end, "Run All Test")
@@ -96,7 +104,9 @@ return {
           overrides.noDebug = false
           require("jdtls.dap").test_nearest_method({ config_overrides = overrides })
         end, "Debug Nearest Test")
-        map("<leader>tl", function() require("dap").run_last() end, "Rerun Last Java Test/Debug")
+        map("<leader>tl", function()
+          require("dap").run_last()
+        end, "Rerun Last Java Test/Debug")
       end
       opts.jdtls = function(config)
         config.init_options = config.init_options or {}
@@ -133,7 +143,13 @@ return {
       return opts
     end,
     keys = {
-      { "<leader>as", function() require("sidekick.cli").select({ filter = { installed = true } }) end, desc = "Select Installed Agent" },
+      {
+        "<leader>as",
+        function()
+          require("sidekick.cli").select({ filter = { installed = true } })
+        end,
+        desc = "Select Installed Agent",
+      },
     },
   },
 }

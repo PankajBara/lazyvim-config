@@ -44,7 +44,8 @@ local function source_path(source)
     local name = vim.api.nvim_buf_get_name(source)
     return name ~= "" and name or vim.uv.cwd()
   end
-  return source and source ~= "" and source or vim.api.nvim_buf_get_name(0) ~= "" and vim.api.nvim_buf_get_name(0)
+  return source and source ~= "" and source
+    or vim.api.nvim_buf_get_name(0) ~= "" and vim.api.nvim_buf_get_name(0)
     or vim.uv.cwd()
 end
 
@@ -59,8 +60,11 @@ function M.kind(root)
   if vim.uv.fs_stat(root .. "/pom.xml") or vim.uv.fs_stat(root .. "/mvnw") then
     return "maven"
   end
-  if vim.uv.fs_stat(root .. "/build.gradle") or vim.uv.fs_stat(root .. "/build.gradle.kts")
-      or vim.uv.fs_stat(root .. "/gradlew") then
+  if
+    vim.uv.fs_stat(root .. "/build.gradle")
+    or vim.uv.fs_stat(root .. "/build.gradle.kts")
+    or vim.uv.fs_stat(root .. "/gradlew")
+  then
     return "gradle"
   end
 end
@@ -137,9 +141,12 @@ function M.select_profile(source)
   end
   local profiles = M.profiles(root)
   local active = M.profile(root)
-  vim.ui.select(profiles, { prompt = "Spring profile", format_item = function(item)
-    return item == active and (item .. " (active)") or item
-  end }, function(choice)
+  vim.ui.select(profiles, {
+    prompt = "Spring profile",
+    format_item = function(item)
+      return item == active and (item .. " (active)") or item
+    end,
+  }, function(choice)
     if choice and M.set_profile(root, choice) then
       notify("Profile set to " .. choice, vim.log.levels.INFO)
     end
@@ -290,10 +297,15 @@ function M.debug_main(source)
       notify("No Java main class found")
       return
     end
-    table.sort(configs, function(a, b) return a.name < b.name end)
-    vim.ui.select(configs, { prompt = "Java main class", format_item = function(item)
-      return item.mainClass
-    end }, function(config)
+    table.sort(configs, function(a, b)
+      return a.name < b.name
+    end)
+    vim.ui.select(configs, {
+      prompt = "Java main class",
+      format_item = function(item)
+        return item.mainClass
+      end,
+    }, function(config)
       if config then
         require("dap").run(config)
       end

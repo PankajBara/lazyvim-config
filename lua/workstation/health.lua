@@ -58,7 +58,11 @@ function M.collect(overrides)
 
   executable(results, ctx, "java", "warn")
   local build_tool = ctx.executable("mvn") or ctx.executable("gradle")
-  add(results, build_tool and "ok" or "warn", build_tool and "Maven or Gradle is available" or "Maven or Gradle is not available")
+  add(
+    results,
+    build_tool and "ok" or "warn",
+    build_tool and "Maven or Gradle is available" or "Maven or Gradle is not available"
+  )
 
   local tools = require("workstation.tools")
   local mason_packages = vim.list_extend(vim.deepcopy(tools.mason_java), tools.mason_ai)
@@ -89,7 +93,11 @@ function M.collect(overrides)
   end
 
   local theme = vim.fs.joinpath(ctx.config, "lua", "plugins", "theme.lua")
-  add(results, ctx.fs_stat(theme) and "ok" or "warn", ctx.fs_stat(theme) and "Theme configuration is available" or "Theme configuration is missing")
+  add(
+    results,
+    ctx.fs_stat(theme) and "ok" or "warn",
+    ctx.fs_stat(theme) and "Theme configuration is available" or "Theme configuration is missing"
+  )
 
   local remote = ctx.env.TMUX or ctx.env.SSH_TTY or ctx.env.SSH_CONNECTION or ctx.env.HERDR_PANE_ID
   if remote then
@@ -99,7 +107,11 @@ function M.collect(overrides)
   end
   if ctx.env.WAYLAND_DISPLAY then
     local wayland = ctx.executable("wl-copy") and ctx.executable("wl-paste")
-    add(results, wayland and "ok" or "warn", wayland and "Wayland clipboard tools are available" or "Wayland is active but wl-clipboard is missing")
+    add(
+      results,
+      wayland and "ok" or "warn",
+      wayland and "Wayland clipboard tools are available" or "Wayland is active but wl-clipboard is missing"
+    )
   else
     add(results, "info", "Wayland clipboard integration is not active")
   end

@@ -1,6 +1,17 @@
 local java_file = vim.env.JAVA_SPRING_SMOKE_FILE
 if not java_file or java_file == "" then
-  java_file = vim.fs.joinpath(vim.fn.stdpath("config"), "tests", "fixtures", "java", "src", "main", "java", "dev", "workstation", "App.java")
+  java_file = vim.fs.joinpath(
+    vim.fn.stdpath("config"),
+    "tests",
+    "fixtures",
+    "java",
+    "src",
+    "main",
+    "java",
+    "dev",
+    "workstation",
+    "App.java"
+  )
 end
 java_file = vim.fs.normalize(java_file)
 if vim.api.nvim_buf_get_name(0) ~= java_file then

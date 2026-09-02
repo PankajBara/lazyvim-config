@@ -26,7 +26,10 @@ local function context(executables, env, installed)
     data = fixture .. "/data",
     config = fixture .. "/config",
     fs_stat = function(path)
-      if path == fixture .. "/config/lua/plugins/theme.lua" or (installed and path:find("/mason/packages/jdtls", 1, true)) then
+      if
+        path == fixture .. "/config/lua/plugins/theme.lua"
+        or (installed and path:find("/mason/packages/jdtls", 1, true))
+      then
         return { type = "file" }
       end
     end,

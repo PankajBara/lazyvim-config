@@ -1,0 +1,81 @@
+name: Quality
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Required checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rhysd/action-setup-vim@v1
+        with:
+          version: v0.11.2
+          neovim: true
+      - uses: JohnnyMorganz/stylua-action@v4
+        with:
+          version: latest
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --check .
+      - name: Run clean unit tests
+        run: |
+          nvim --clean --headless -l tests/spring_project.lua
+          nvim --clean --headless -l tests/root_detection.lua
+          nvim --clean --headless -l tests/task_output.lua
+          nvim --clean --headless -l tests/health.lua
+      - name: Bootstrap pinned plugins
+        env:
+          XDG_CONFIG_HOME: ${{ runner.temp }}/xdg/config
+          XDG_DATA_HOME: ${{ runner.temp }}/xdg/data
+          XDG_STATE_HOME: ${{ runner.temp }}/xdg/state
+          XDG_CACHE_HOME: ${{ runner.temp }}/xdg/cache
+        run: |
+          mkdir -p "$XDG_CONFIG_HOME"
+          ln -s "$GITHUB_WORKSPACE" "$XDG_CONFIG_HOME/nvim"
+          nvim --headless -u init.lua "+Lazy! sync" +qa
+          nvim --headless -u init.lua +qa
+      - run: git diff --check
+
+  java-integration:
+    name: Java integration
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: rhysd/action-setup-vim@v1
+        with:
+          version: v0.11.2
+          neovim: true
+      - uses: actions/cache@v4
+        with:
+          path: |
+            .ci-data/nvim/lazy
+            .ci-data/nvim/mason
+          key: java-tools-${{ runner.os }}-${{ hashFiles('lazy-lock.json') }}
+      - name: Bootstrap plugins and Java tools
+        env: &xdg
+          XDG_CONFIG_HOME: ${{ github.workspace }}/.ci-config
+          XDG_DATA_HOME: ${{ github.workspace }}/.ci-data
+          XDG_STATE_HOME: ${{ runner.temp }}/state
+          XDG_CACHE_HOME: ${{ runner.temp }}/cache
+        run: |
+          mkdir -p "$XDG_CONFIG_HOME"
+          ln -s "$GITHUB_WORKSPACE" "$XDG_CONFIG_HOME/nvim"
+          nvim --headless -u init.lua "+Lazy! sync" +qa
+          timeout 720 nvim --headless -u init.lua -l .github/scripts/install-java-tools.lua
+      - name: Run JDTLS and DAP smoke test
+        env: *xdg
+        run: timeout 180 nvim --headless -u init.lua -l tests/java_spring_smoke.lua

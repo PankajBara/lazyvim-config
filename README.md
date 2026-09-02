@@ -167,7 +167,7 @@ nvim --headless -u init.lua -l tests/spring_project.lua
 nvim --headless -u init.lua -l tests/root_detection.lua
 nvim --headless -u init.lua -l tests/task_output.lua
 nvim --headless -u init.lua '+qa'
-stylua --check lua tests plugin
+stylua --check lua/config lua/spring_project.lua lua/overseer tests lua/plugins/java-spring.lua
 git diff --check
 ```
 

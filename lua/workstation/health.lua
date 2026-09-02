@@ -51,7 +51,7 @@ function M.collect(overrides)
   local version_ok = version.major > 0 or version.minor > 11 or (version.minor == 11 and version.patch >= 2)
   add(results, version_ok and "ok" or "error", "Neovim 0.11.2+" .. (version_ok and "" or " is required"))
   add(results, ctx.jit and "ok" or "error", ctx.jit and "LuaJIT is enabled" or "LuaJIT is required")
-  executable(results, ctx, "git", "error")
+  executable(results, ctx, "git", "error", "Git")
   executable(results, ctx, "rg", "error", "ripgrep")
   local compiler = ctx.executable("cc") or ctx.executable("gcc") or ctx.executable("clang")
   add(results, compiler and "ok" or "error", compiler and "A C compiler is available" or "A C compiler is required")
@@ -60,7 +60,9 @@ function M.collect(overrides)
   local build_tool = ctx.executable("mvn") or ctx.executable("gradle")
   add(results, build_tool and "ok" or "warn", build_tool and "Maven or Gradle is available" or "Maven or Gradle is not available")
 
-  for _, package in ipairs(require("workstation.tools").mason_java) do
+  local tools = require("workstation.tools")
+  local mason_packages = vim.list_extend(vim.deepcopy(tools.mason_java), tools.mason_ai)
+  for _, package in ipairs(mason_packages) do
     local path = vim.fs.joinpath(ctx.data, "mason", "packages", package)
     add(
       results,

@@ -5,7 +5,9 @@ return {
     "mason-org/mason.nvim",
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, require("workstation.tools").mason_java)
+      local tools = require("workstation.tools")
+      vim.list_extend(opts.ensure_installed, tools.mason_java)
+      vim.list_extend(opts.ensure_installed, tools.mason_ai)
       return opts
     end,
   },

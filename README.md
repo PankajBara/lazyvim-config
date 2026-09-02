@@ -23,7 +23,7 @@ git clone https://github.com/PankajBara/lazyvim-config.git ~/.config/nvim
 nvim
 ```
 
-On the first launch, lazy.nvim installs the pinned plugins and Mason begins installing configured Java tools. Let installation finish, restart Neovim, then run `:checkhealth`. Existing data under `~/.local/share/nvim` is not removed by these commands.
+On the first launch, lazy.nvim installs the pinned plugins and Mason begins installing configured Java tools. Let installation finish, restart Neovim, then run `:checkhealth workstation`. Existing data under `~/.local/share/nvim` is not removed by these commands.
 
 To update later:
 
@@ -141,7 +141,8 @@ In tmux, SSH, or Herdr sessions, copies are emitted through OSC 52 for terminal/
 | `:Lazy` | Inspect, update, and sync plugins |
 | `:Mason` | Install and update development tools |
 | `:LspInfo` | Inspect language-server attachment |
-| `:checkhealth` | Diagnose Neovim and providers |
+| `:checkhealth workstation` | Check required workstation tools, Java tooling, paths, themes, and clipboard support |
+| `:checkhealth` | Diagnose all Neovim plugins and providers |
 | `:OverseerToggle` | Show task status and output |
 | `:LazyExtras` | Enable or disable LazyVim extras |
 
@@ -149,7 +150,8 @@ In tmux, SSH, or Herdr sessions, copies are emitted through OSC 52 for terminal/
 
 - [`init.lua`](init.lua): entry point
 - [`lua/config/lazy.lua`](lua/config/lazy.lua): plugin bootstrap and imports
-- [`lua/config/options.lua`](lua/config/options.lua): roots and options; global autoformat is disabled here
+- [`lua/config/options.lua`](lua/config/options.lua): options and LazyVim root specification; global autoformat is disabled here
+- [`lua/workstation/`](lua/workstation): testable project-root, tool inventory, and health modules
 - [`lua/config/keymaps.lua`](lua/config/keymaps.lua) and [`lua/config/autocmds.lua`](lua/config/autocmds.lua): customization entry points
 - [`lua/plugins/`](lua/plugins): plugin specifications and integrations
 - [`lua/overseer/template/user/`](lua/overseer/template/user): task definitions
@@ -163,21 +165,24 @@ Add personal mappings, options, and autocmds to their matching files. Put focuse
 From this repository:
 
 ```sh
-nvim --headless -u init.lua -l tests/spring_project.lua
-nvim --headless -u init.lua -l tests/root_detection.lua
-nvim --headless -u init.lua -l tests/task_output.lua
+nvim --clean --headless -l tests/spring_project.lua
+nvim --clean --headless -l tests/root_detection.lua
+nvim --clean --headless -l tests/task_output.lua
+nvim --clean --headless -l tests/health.lua
 nvim --headless -u init.lua '+qa'
-stylua --check lua/config lua/spring_project.lua lua/overseer tests lua/plugins/java-spring.lua
+stylua --check .
 git diff --check
 ```
 
-The Java smoke test needs a real Java file inside Maven/Gradle plus installed JDTLS/debug bundles:
+The Java smoke test uses the minimal Maven project in [`tests/fixtures/java`](tests/fixtures/java) by default and needs the configured JDTLS, Java debug/test, and Spring bundles. Override its source file when needed:
 
 ```sh
 JAVA_SPRING_SMOKE_FILE=/absolute/path/to/Example.java \
   nvim --headless -u init.lua /absolute/path/to/Example.java \
   -l tests/java_spring_smoke.lua
 ```
+
+GitHub Actions runs formatting, all clean unit tests, an isolated pinned-plugin bootstrap, full headless startup, and whitespace validation as required checks. A separately retryable Java integration job installs JDK 21 and the configured Mason Java tools, then runs the fixture-backed smoke test; it is visible but non-blocking because it depends on external registries and tool downloads.
 
 ## Troubleshooting
 

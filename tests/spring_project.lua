@@ -1,3 +1,4 @@
+vim.opt.runtimepath:prepend(vim.uv.cwd())
 local spring = require("spring_project")
 
 local function assert_equal(actual, expected, label)
@@ -7,6 +8,7 @@ local function assert_equal(actual, expected, label)
 end
 
 local fixture = vim.fn.tempname()
+local original_state_file = vim.g.spring_project_state_file
 vim.fn.mkdir(fixture .. "/maven/src/main/resources", "p")
 vim.fn.mkdir(fixture .. "/maven/modules/accounts/src/main/resources", "p")
 vim.fn.mkdir(fixture .. "/maven/target/generated/src/main/resources", "p")
@@ -88,5 +90,8 @@ assert(
   not state:find("base", 1, true) and not state:find("local", 1, true),
   "State must not contain environment values"
 )
+
+vim.g.spring_project_state_file = original_state_file
+vim.fn.delete(fixture, "rf")
 
 print("spring_project tests: ok")

@@ -38,10 +38,8 @@ return {
     end
 
     local cwd = vim.fs.dirname(source)
-    local executable = vim.fs.joinpath(
-      output_dir,
-      vim.fn.fnamemodify(source, ":t:r") .. "-" .. vim.fn.sha256(source):sub(1, 16)
-    )
+    local executable =
+      vim.fs.joinpath(output_dir, vim.fn.fnamemodify(source, ":t:r") .. "-" .. vim.fn.sha256(source):sub(1, 16))
     local compile = 'mkdir -p "$1" && g++ -std=c++20 -Wall -Wextra -Wpedantic -g "$2" -o "$3"'
 
     local function task(name, command)

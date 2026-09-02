@@ -59,10 +59,8 @@ return {
     local tasks = {}
 
     if extension == "c" then
-      local executable = vim.fs.joinpath(
-        output_dir,
-        vim.fn.fnamemodify(source, ":t:r") .. "-" .. vim.fn.sha256(source):sub(1, 16)
-      )
+      local executable =
+        vim.fs.joinpath(output_dir, vim.fn.fnamemodify(source, ":t:r") .. "-" .. vim.fn.sha256(source):sub(1, 16))
       local compile = 'mkdir -p "$1" && gcc -std=c17 -Wall -Wextra -Wpedantic -g "$2" -o "$3"'
       local function add(name, command)
         tasks[#tasks + 1] = {
@@ -86,7 +84,18 @@ return {
         args = { "run", source }
       end
       tasks[#tasks + 1] = {
-        name = ({ py = "Python", pyw = "Python", js = "JavaScript", mjs = "JavaScript", cjs = "JavaScript", ts = "TypeScript", mts = "TypeScript", cts = "TypeScript", rb = "Ruby", lua = "Lua" })[extension] .. ": Run Current File",
+        name = ({
+          py = "Python",
+          pyw = "Python",
+          js = "JavaScript",
+          mjs = "JavaScript",
+          cjs = "JavaScript",
+          ts = "TypeScript",
+          mts = "TypeScript",
+          cts = "TypeScript",
+          rb = "Ruby",
+          lua = "Lua",
+        })[extension] .. ": Run Current File",
         builder = function()
           return {
             cmd = command,

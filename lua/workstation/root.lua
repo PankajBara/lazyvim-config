@@ -39,6 +39,10 @@ function M.find(source, opts)
       return dir
     end
 
+    if dir == home then
+      break
+    end
+
     local parent = vim.fs.dirname(dir)
     if parent == dir then
       break

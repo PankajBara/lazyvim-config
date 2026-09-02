@@ -33,7 +33,7 @@ local ok, err = xpcall(function()
   file(fixture .. "/home/.git/HEAD", {})
   file(fixture .. "/home/notes/item.txt", {})
   assert_equal(root.lazyvim(fixture .. "/home/notes/item.txt", { home = fixture .. "/home" }), {}, "Home exclusion")
-  assert_equal(root.lazyvim(fixture .. "/plain/file.txt"), {}, "Unmatched path")
+  assert_equal(root.lazyvim(fixture .. "/plain/file.txt", { home = fixture }), {}, "Unmatched path")
 end, debug.traceback)
 
 vim.fn.delete(fixture, "rf")

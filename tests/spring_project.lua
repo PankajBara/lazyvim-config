@@ -8,14 +8,25 @@ end
 
 local fixture = vim.fn.tempname()
 vim.fn.mkdir(fixture .. "/maven/src/main/resources", "p")
+vim.fn.mkdir(fixture .. "/maven/modules/accounts/src/main/resources", "p")
 vim.fn.mkdir(fixture .. "/maven/target/generated/src/main/resources", "p")
+vim.fn.mkdir(fixture .. "/maven/build/src/main/resources", "p")
+vim.fn.mkdir(fixture .. "/maven/generated/src/main/resources", "p")
+vim.fn.mkdir(fixture .. "/maven/node_modules/example/src/main/resources", "p")
+vim.fn.mkdir(fixture .. "/maven/src/test/resources", "p")
 vim.fn.mkdir(fixture .. "/gradle/src/main/resources", "p")
 vim.fn.writefile({ "<project/>" }, fixture .. "/maven/pom.xml")
 vim.fn.writefile({ "#!/bin/sh" }, fixture .. "/maven/mvnw")
 vim.fn.writefile({}, fixture .. "/maven/src/main/resources/application-dev.properties")
 vim.fn.writefile({}, fixture .. "/maven/src/main/resources/application-prod.yml")
 vim.fn.writefile({}, fixture .. "/maven/src/main/resources/application-qa.yaml")
+vim.fn.writefile({}, fixture .. "/maven/modules/accounts/src/main/resources/application-alpha.yml")
 vim.fn.writefile({}, fixture .. "/maven/target/generated/src/main/resources/application-generated.yml")
+vim.fn.writefile({}, fixture .. "/maven/build/src/main/resources/application-build.yml")
+vim.fn.writefile({}, fixture .. "/maven/generated/src/main/resources/application-generated-root.yml")
+vim.fn.writefile({}, fixture .. "/maven/node_modules/example/src/main/resources/application-dependency.yml")
+vim.fn.writefile({}, fixture .. "/maven/src/test/resources/application-test.yml")
+vim.fn.writefile({}, fixture .. "/maven/application-unconventional.yml")
 vim.fn.writefile({ "plugins {}" }, fixture .. "/gradle/build.gradle.kts")
 vim.fn.writefile({ "#!/bin/sh" }, fixture .. "/gradle/gradlew")
 
@@ -25,7 +36,11 @@ assert_equal(
   "Maven root"
 )
 assert_equal(spring.root(fixture .. "/gradle/src/main/resources"), fixture .. "/gradle", "Gradle root")
-assert_equal(spring.profiles(fixture .. "/maven"), { "default", "dev", "prod", "qa" }, "Profile discovery")
+assert_equal(
+  spring.profiles(fixture .. "/maven"),
+  { "default", "alpha", "dev", "prod", "qa" },
+  "Nested profile discovery, ordering, and directory pruning"
+)
 
 local maven_cmd, maven_args = spring.command(fixture .. "/maven")
 assert_equal(maven_cmd, fixture .. "/maven/mvnw", "Maven wrapper")

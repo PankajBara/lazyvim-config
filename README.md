@@ -33,6 +33,18 @@ git -C ~/.config/nvim pull --ff-only
 
 Then open `:Lazy`, press `S` to sync plugins, and review changes before committing local customizations. Use `:Mason` to update external language tools. The lockfile keeps plugin versions reproducible.
 
+## Workstation health
+
+Run `:checkhealth workstation` after installation or when a tool-backed feature stops working. The report checks:
+
+- Neovim 0.11.2+, LuaJIT, Git, ripgrep, and a C compiler
+- Java, Maven/Gradle, and the configured Mason Java and Copilot packages
+- task runtimes, AI CLIs, lazygit, and context-appropriate clipboard tools
+- writable runtime/cache directories and the generated or fallback theme configuration
+- OSC 52 support in tmux, SSH, and Herdr sessions, plus Wayland clipboard support when Wayland is active
+
+Missing baseline requirements and unwritable required paths are errors. Missing Java workstation dependencies, Mason packages, lazygit, or active Wayland clipboard tools are warnings. Runtimes and AI CLIs used only by optional tasks are informational.
+
 ## What is enabled
 
 - C/C++ (clangd), Java/JDTLS and Spring Boot, JSON, SQL, YAML, Lua, plus LazyVim's core LSP and completion support
@@ -88,7 +100,7 @@ This compact list matches the pinned LazyVim version. It is intentionally not ex
 
 ## Spring and Java workflow
 
-Open a file inside a Maven or Gradle project. Detection recognizes `pom.xml`, Maven/Gradle wrappers and build files. General project roots also recognize normal `.git` directories and `.git` files used by Git worktrees.
+Open a file inside a Maven or Gradle project. Detection recognizes `pom.xml`, Maven/Gradle wrappers and build files. General project roots also recognize normal `.git` directories and `.git` files used by Git worktrees, while deliberately avoiding the home directory as a Git project root.
 
 `<leader>jp` discovers `application-<profile>.properties`, `.yml`, and `.yaml` under conventional `src/main/resources` paths, including nested modules. Build output, generated content, dependencies, VCS metadata, and IDE directories are pruned. Profiles are ordered with `default` first and then alphabetically.
 
@@ -162,7 +174,7 @@ Add personal mappings, options, and autocmds to their matching files. Put focuse
 
 ## Testing
 
-From this repository:
+The unit tests run with `nvim --clean`; they do not load LazyVim, plugins, Mason state, or personal projects. From this repository:
 
 ```sh
 nvim --clean --headless -l tests/spring_project.lua
@@ -174,15 +186,26 @@ stylua --check .
 git diff --check
 ```
 
-The Java smoke test uses the minimal Maven project in [`tests/fixtures/java`](tests/fixtures/java) by default and needs the configured JDTLS, Java debug/test, and Spring bundles. Override its source file when needed:
+The Java integration smoke test uses the minimal Maven project in [`tests/fixtures/java`](tests/fixtures/java) by default. It verifies JDTLS attachment, Java DAP registration, Spring extension loading, and buffer-local Java mappings. It requires the configured JDTLS, Java debug/test, and Spring Mason packages:
+
+```sh
+nvim --headless -u init.lua -l tests/java_spring_smoke.lua
+```
+
+Set `JAVA_SPRING_SMOKE_FILE` to test another Maven or Gradle project:
 
 ```sh
 JAVA_SPRING_SMOKE_FILE=/absolute/path/to/Example.java \
-  nvim --headless -u init.lua /absolute/path/to/Example.java \
-  -l tests/java_spring_smoke.lua
+  nvim --headless -u init.lua -l tests/java_spring_smoke.lua
 ```
 
-GitHub Actions runs formatting, all clean unit tests, an isolated pinned-plugin bootstrap, full headless startup, and whitespace validation as required checks. A separately retryable Java integration job installs JDK 21 and the configured Mason Java tools, then runs the fixture-backed smoke test; it is visible but non-blocking because it depends on external registries and tool downloads.
+`stylua --check .` is the canonical formatting gate. It checks all Lua except Omarchy-generated [`lua/plugins/theme.lua`](lua/plugins/theme.lua), which is listed in [`.styluaignore`](.styluaignore).
+
+### Continuous integration
+
+The required GitHub Actions job uses Neovim 0.11.2 and pinned StyLua 2.3.1. It runs formatting, all clean unit tests, an isolated bootstrap of the locked plugin set, full headless startup, and `git diff --check`.
+
+The separately retryable Java integration job uses Temurin JDK 21, caches Lazy and Mason data using `lazy-lock.json`, installs the configured Java tooling with a bounded helper, and runs the fixture-backed smoke test. This job remains visible but non-blocking because external registries and tool downloads can fail independently of the configuration. Superseded runs on the same branch are cancelled, and the workflow has read-only repository permissions.
 
 ## Troubleshooting
 

@@ -23,7 +23,7 @@ jobs:
           neovim: true
       - uses: JohnnyMorganz/stylua-action@v4
         with:
-          version: latest
+          version: 2.3.1
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --check .
       - name: Run clean unit tests
@@ -66,7 +66,7 @@ jobs:
             .ci-data/nvim/mason
           key: java-tools-${{ runner.os }}-${{ hashFiles('lazy-lock.json') }}
       - name: Bootstrap plugins and Java tools
-        env: &xdg
+        env:
           XDG_CONFIG_HOME: ${{ github.workspace }}/.ci-config
           XDG_DATA_HOME: ${{ github.workspace }}/.ci-data
           XDG_STATE_HOME: ${{ runner.temp }}/state
@@ -77,5 +77,9 @@ jobs:
           nvim --headless -u init.lua "+Lazy! sync" +qa
           timeout 720 nvim --headless -u init.lua -l .github/scripts/install-java-tools.lua
       - name: Run JDTLS and DAP smoke test
-        env: *xdg
+        env:
+          XDG_CONFIG_HOME: ${{ github.workspace }}/.ci-config
+          XDG_DATA_HOME: ${{ github.workspace }}/.ci-data
+          XDG_STATE_HOME: ${{ runner.temp }}/state
+          XDG_CACHE_HOME: ${{ runner.temp }}/cache
         run: timeout 180 nvim --headless -u init.lua -l tests/java_spring_smoke.lua

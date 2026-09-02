@@ -65,6 +65,7 @@ Java mappings are buffer-local and appear after JDTLS attaches.
 
 | Mapping | Action |
 | --- | --- |
+| `jj` (insert mode) | Return to normal mode |
 | `<leader>rr` | Choose a project or current-file Overseer task |
 | `<leader>jp` | Select and persist a Spring profile |
 | `<leader>jr` | Run the Spring Boot application |

@@ -27,7 +27,7 @@ local function project_root(buf)
     end
 
     local git = vim.uv.fs_stat(vim.fs.joinpath(dir, ".git"))
-    if git and git.type == "directory" and dir ~= home_dir then
+    if git and (git.type == "directory" or git.type == "file") and dir ~= home_dir then
       return { dir }
     end
 

@@ -56,7 +56,6 @@ return {
             rename = { enabled = true },
           },
           format = { enabled = true },
-          saveActions = { organizeImports = true },
           configuration = { updateBuildConfiguration = "automatic", runtimes = {} },
           maven = { downloadSources = true, updateSnapshots = true },
           gradle = { enabled = true, downloadSources = true },

@@ -4,7 +4,7 @@ local extensions = {
   cxx = true,
 }
 
-local output_dir = "/run/user/1000/nvim-overseer-cpp"
+local output_dir = require("config.task_output").dir("nvim-overseer-cpp")
 
 local function source_file()
   local path = vim.api.nvim_buf_get_name(0)

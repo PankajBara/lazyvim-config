@@ -1,7 +1,21 @@
 local M = {}
 
 local markers = { "pom.xml", "mvnw", "build.gradle", "build.gradle.kts", "gradlew" }
-local ignored_dirs = { [".git"] = true, target = true, build = true }
+local ignored_dirs = {
+  [".git"] = true,
+  [".gradle"] = true,
+  [".idea"] = true,
+  [".mvn"] = true,
+  [".settings"] = true,
+  [".vscode"] = true,
+  build = true,
+  dist = true,
+  generated = true,
+  node_modules = true,
+  out = true,
+  target = true,
+  vendor = true,
+}
 
 local function notify(message, level)
   vim.notify(message, level or vim.log.levels.WARN, { title = "Spring" })
@@ -69,7 +83,7 @@ function M.kind(root)
   end
 end
 
-local function scan_profiles(path, found)
+local function scan_resource_dir(path, found)
   local handle = vim.uv.fs_scandir(path)
   if not handle then
     return
@@ -79,10 +93,7 @@ local function scan_profiles(path, found)
     if not name then
       break
     end
-    local child = path .. "/" .. name
-    if entry_type == "directory" and not ignored_dirs[name] then
-      scan_profiles(child, found)
-    elseif entry_type == "file" and path:match("/src/main/resources$") then
+    if entry_type == "file" then
       local profile = name:match("^application%-(.+)%.properties$")
         or name:match("^application%-(.+)%.yml$")
         or name:match("^application%-(.+)%.yaml$")
@@ -93,10 +104,28 @@ local function scan_profiles(path, found)
   end
 end
 
+local function scan_modules(path, found)
+  scan_resource_dir(vim.fs.joinpath(path, "src", "main", "resources"), found)
+
+  local handle = vim.uv.fs_scandir(path)
+  if not handle then
+    return
+  end
+  while true do
+    local name, entry_type = vim.uv.fs_scandir_next(handle)
+    if not name then
+      break
+    end
+    if entry_type == "directory" and name ~= "src" and not ignored_dirs[name] then
+      scan_modules(vim.fs.joinpath(path, name), found)
+    end
+  end
+end
+
 function M.profiles(root)
   local found = { default = true }
   if root then
-    scan_profiles(root, found)
+    scan_modules(root, found)
   end
   local profiles = vim.tbl_keys(found)
   table.sort(profiles, function(a, b)

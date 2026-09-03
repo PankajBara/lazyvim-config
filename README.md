@@ -77,6 +77,9 @@ Java mappings are buffer-local and appear after JDTLS attaches.
 | `<leader>td` | Debug the nearest Java test method |
 | `<leader>tl` | Rerun the last Java test or debug session |
 | `<leader>as` | Select an installed Codex, Claude, or Copilot CLI |
+| `<leader>ac` | Open a CodeCompanion chat in an editor buffer |
+| `<leader>aa` | Open an inline CodeCompanion refactor prompt on the buffer/selection |
+| `<leader>ai` | Open the CodeCompanion actions palette |
 
 The Java test mappings override equivalent Neotest mappings only in Java buffers.
 

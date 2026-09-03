@@ -50,7 +50,7 @@ Missing baseline requirements and unwritable required paths are errors. Missing 
 - C/C++ (clangd), Java/JDTLS and Spring Boot, JSON, SQL, YAML, Lua, plus LazyVim's core LSP and completion support
 - nvim-dap, DAP UI, Java debugging and remote attach; Neotest and Java test actions
 - Kulala REST requests, Overseer tasks, Neo-tree, Snacks search, Trouble, and Git signs
-- Copilot language-server suggestions and Sidekick sessions for installed Codex, Claude, or Copilot CLIs
+- Copilot language-server suggestions, CodeCompanion in-editor chat/inline edits (via the Copilot CLI), and Sidekick sessions for installed Codex, Claude, or Copilot CLIs
 - Multiple colorschemes, transparent highlights, optional Omarchy theme reload, and optional OSC 52/tmux/Wayland clipboard handling
 
 Configured extras are recorded in [`lazyvim.json`](lazyvim.json); plugin versions are pinned in [`lazy-lock.json`](lazy-lock.json).

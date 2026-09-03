@@ -64,8 +64,7 @@ return {
       -- the default root_dir, which prevents JDTLS from attaching. Fall back to the
       -- file's own directory so LSP, DAP, and diagnostics work for single files.
       opts.root_dir = function(path)
-        return vim.fs.root(path, vim.lsp.config.jdtls.root_markers)
-          or vim.fs.dirname(vim.api.nvim_buf_get_name(0))
+        return vim.fs.root(path, vim.lsp.config.jdtls.root_markers) or vim.fs.dirname(vim.api.nvim_buf_get_name(0))
       end
       local previous_on_attach = opts.on_attach
       opts.on_attach = function(args)

@@ -130,6 +130,7 @@ return {
         "user.java_build",
         "user.cpp_build",
         "user.current_file",
+        "user.java_single_file",
       }
       return opts
     end,

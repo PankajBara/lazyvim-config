@@ -1,6 +1,7 @@
 -- In-editor AI chat and inline edits backed by the GitHub Copilot CLI (ACP).
--- Requires an authenticated `copilot` CLI on PATH (same GitHub account used by
--- the copilot-native extra); it reuses that login with no extra auth step.
+-- Requires an authenticated `copilot` CLI on PATH (the same GitHub account used
+-- by the copilot-native completion extra); it reuses that login with no extra
+-- auth step. Run `copilot auth` once if the CLI has not been signed in.
 return {
 	{
 		"olimorris/codecompanion.nvim",
@@ -32,22 +33,17 @@ return {
 				mode = { "n", "v" },
 			},
 			{
+				"<leader>aa",
+				"<cmd>CodeCompanion<cr>",
+				desc = "CodeCompanion Inline",
+				mode = { "n", "v" },
+			},
+			{
 				"<leader>ai",
 				"<cmd>CodeCompanionActions<cr>",
 				desc = "CodeCompanion Actions",
 				mode = { "n", "v" },
 			},
-			{
-				"<leader>aa",
-				function()
-					require("codecompanion").inline()
-				end,
-				desc = "CodeCompanion Inline",
-				mode = { "n", "v" },
-			},
 		},
-		config = function(_, opts)
-			require("codecompanion").setup(opts)
-		end,
 	},
 }

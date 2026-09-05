@@ -37,6 +37,11 @@ return {
     "mfussenegger/nvim-jdtls",
     dependencies = { "JavaHello/spring-boot.nvim" },
     init = function()
+      if vim.fn.exists(":SpringProjectInfo") == 0 then
+        vim.api.nvim_create_user_command("SpringProjectInfo", function()
+          require("spring_project").inspect(0)
+        end, { desc = "Inspect Java/Spring project detection" })
+      end
       local group = vim.api.nvim_create_augroup("JavaSpringJdtls", { clear = true })
       vim.api.nvim_create_autocmd("BufWritePre", {
         group = group,
@@ -175,6 +180,9 @@ return {
         map("<leader>jp", function()
           spring.select_profile(args.buf)
         end, "Select Spring Profile")
+        map("<leader>ji", function()
+          spring.inspect(args.buf)
+        end, "Inspect Java Project")
         map("<leader>jr", function()
           spring.run(args.buf)
         end, "Run Spring Boot")
@@ -185,21 +193,38 @@ return {
           spring.attach(args.buf)
         end, "Attach Remote JVM")
         map("<leader>tt", function()
-          require("jdtls.dap").test_class({ config_overrides = test_overrides() })
+          local dap = require("spring_project").jdtls_dap()
+          if dap then
+            dap.test_class({ config_overrides = test_overrides() })
+          end
         end, "Run All Test")
         map("<leader>tr", function()
-          require("jdtls.dap").test_nearest_method({ config_overrides = test_overrides() })
+          local dap = require("spring_project").jdtls_dap()
+          if dap then
+            dap.test_nearest_method({ config_overrides = test_overrides() })
+          end
         end, "Run Nearest Test")
         map("<leader>tT", function()
-          require("jdtls.dap").pick_test({ config_overrides = test_overrides() })
+          local dap = require("spring_project").jdtls_dap()
+          if dap then
+            dap.pick_test({ config_overrides = test_overrides() })
+          end
         end, "Run Test")
         map("<leader>td", function()
+          local dap = require("spring_project").jdtls_dap()
+          local debug = require("spring_project").dap()
+          if not dap or not debug then
+            return
+          end
           local overrides = test_overrides() or {}
           overrides.noDebug = false
-          require("jdtls.dap").test_nearest_method({ config_overrides = overrides })
+          dap.test_nearest_method({ config_overrides = overrides })
         end, "Debug Nearest Test")
         map("<leader>tl", function()
-          require("dap").run_last()
+          local dap = require("spring_project").dap()
+          if dap and type(dap.run_last) == "function" then
+            dap.run_last()
+          end
         end, "Rerun Last Java Test/Debug")
       end
       opts.jdtls = function(config)

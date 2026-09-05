@@ -73,8 +73,8 @@ return {
                 local client = vim.lsp.get_client_by_id(client_id)
                 if client and not is_stopped(client) then
                   for _, action in ipairs(result) do
-                    local title = type(action.title) == "string" and action.title or ""
-                    if title:lower():match("add[%w%s]*import") and action.edit then
+                    local title = type(action) == "table" and action.title or ""
+                    if type(title) == "string" and title:lower():match("add[%w%s]*import") and action.edit then
                       pcall(
                         vim.lsp.util.apply_workspace_edit,
                         action.edit,

@@ -342,12 +342,13 @@ end
 function M.info(source)
   local root = M.root(source)
   local kind = M.kind(root)
-  local environment = root and M.environment(root) or {
-    env = {},
-    sources = {},
-    source_by_key = {},
-    resolved_source = "none",
-  }
+  local environment = root and M.environment(root)
+    or {
+      env = {},
+      sources = {},
+      source_by_key = {},
+      resolved_source = "none",
+    }
   local command = root and M.command(root) or nil
   return {
     root = root,
@@ -407,7 +408,10 @@ function M.run(source)
   if not definition then
     local kind = M.kind(root)
     if kind then
-      notify((kind == "maven" and "Maven" or "Gradle") .. " project detected, but no executable wrapper or system build tool is available")
+      notify(
+        (kind == "maven" and "Maven" or "Gradle")
+          .. " project detected, but no executable wrapper or system build tool is available"
+      )
     else
       notify("No Maven or Gradle project root found")
     end
@@ -474,7 +478,10 @@ build_available = function(root)
     return true
   end
   local kind = M.kind(root)
-  notify((kind == "maven" and "Maven" or "Gradle") .. " project detected, but no executable wrapper or system build tool is available")
+  notify(
+    (kind == "maven" and "Maven" or "Gradle")
+      .. " project detected, but no executable wrapper or system build tool is available"
+  )
   return false
 end
 

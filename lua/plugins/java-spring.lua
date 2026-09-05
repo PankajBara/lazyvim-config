@@ -222,7 +222,11 @@ return {
           local debug = require("spring_project").dap()
           if not dap or not debug or type(dap.test_nearest_method) ~= "function" then
             if dap and debug then
-              vim.notify("Java test support is unavailable; install java-test", vim.log.levels.WARN, { title = "Spring" })
+              vim.notify(
+                "Java test support is unavailable; install java-test",
+                vim.log.levels.WARN,
+                { title = "Spring" }
+              )
             end
             return
           end

@@ -30,27 +30,46 @@ local function state_file()
 end
 
 local function read_state()
-  local file = io.open(state_file(), "r")
+  local ok_open, file = pcall(io.open, state_file(), "r")
+  if not ok_open then
+    return {}
+  end
   if not file then
     return {}
   end
-  local contents = file:read("*a")
-  file:close()
-  local ok, decoded = pcall(vim.json.decode, contents)
-  return ok and type(decoded) == "table" and decoded or {}
+  local ok_read, contents = pcall(file.read, file, "*a")
+  pcall(file.close, file)
+  if not ok_read or type(contents) ~= "string" or contents == "" then
+    return {}
+  end
+  local ok_decode, decoded = pcall(vim.json.decode, contents)
+  if not ok_decode or type(decoded) ~= "table" or vim.tbl_islist(decoded) then
+    return {}
+  end
+  -- Ignore malformed entries rather than allowing a bad state file to break
+  -- profile selection for every project.
+  local state = {}
+  for root, profile in pairs(decoded) do
+    if type(root) == "string" and type(profile) == "string" then
+      state[root] = profile
+    end
+  end
+  return state
 end
 
 local function write_state(state)
   local path = state_file()
-  vim.fn.mkdir(vim.fs.dirname(path), "p")
-  local file, err = io.open(path, "w")
-  if not file then
-    notify("Could not save the selected profile: " .. tostring(err), vim.log.levels.ERROR)
+  pcall(vim.fn.mkdir, vim.fs.dirname(path), "p")
+  local ok_open, file, err = pcall(io.open, path, "w")
+  if not ok_open then
     return false
   end
-  file:write(vim.json.encode(state))
-  file:close()
-  return true
+  if not file then
+    return false
+  end
+  local ok_write = pcall(file.write, file, vim.json.encode(state))
+  pcall(file.close, file)
+  return ok_write
 end
 
 local function source_path(source)
@@ -232,43 +251,132 @@ function M.parse_dotenv(contents)
 end
 
 local function load_dotenv_file(path, env)
-  local file = io.open(path, "r")
-  if not file then
-    return
+  local ok_open, file = pcall(io.open, path, "r")
+  if not ok_open then
+    return false
   end
-  local parsed, warnings = M.parse_dotenv(file:read("*a"))
-  file:close()
+  if not file then
+    return false
+  end
+  local ok_read, contents = pcall(file.read, file, "*a")
+  pcall(file.close, file)
+  if not ok_read or type(contents) ~= "string" then
+    return false
+  end
+  local parsed = M.parse_dotenv(contents)
   for key, value in pairs(parsed) do
     env[key] = value
   end
-  for _, line_number in ipairs(warnings) do
-    notify(("Ignoring malformed dotenv assignment in %s at line %d"):format(vim.fs.basename(path), line_number))
-  end
+  return true
 end
 
-function M.env(root)
+function M.environment(root)
   local env = {}
+  local sources = {}
+  local source_by_key = {}
   if root then
-    load_dotenv_file(root .. "/.env", env)
-    load_dotenv_file(root .. "/.env.local", env)
+    for _, filename in ipairs({ ".env", ".env.local" }) do
+      local path = vim.fs.joinpath(root, filename)
+      local before = vim.deepcopy(env)
+      if load_dotenv_file(path, env) then
+        sources[#sources + 1] = filename
+        for key in pairs(env) do
+          if env[key] ~= before[key] then
+            source_by_key[key] = filename
+          end
+        end
+      end
+    end
     local profile = M.profile(root)
     if profile ~= "default" then
       env.SPRING_PROFILES_ACTIVE = profile
+      source_by_key.SPRING_PROFILES_ACTIVE = "profile:" .. profile
     end
   end
-  return env
+  local resolved_source = "none"
+  if #sources > 0 then
+    resolved_source = sources[#sources]
+  end
+  if source_by_key.SPRING_PROFILES_ACTIVE then
+    resolved_source = source_by_key.SPRING_PROFILES_ACTIVE
+  end
+  return {
+    env = env,
+    sources = sources,
+    source_by_key = source_by_key,
+    resolved_source = resolved_source,
+  }
+end
+
+function M.env(root)
+  return M.environment(root).env
+end
+
+function M.env_source(root)
+  return M.environment(root).resolved_source
 end
 
 function M.command(root)
+  if not root or root == "" then
+    return nil, nil
+  end
   local kind = M.kind(root)
   if kind == "maven" then
-    local wrapper = root .. "/mvnw"
-    return vim.uv.fs_stat(wrapper) and wrapper or vim.fn.executable("mvn") == 1 and "mvn" or nil, { "spring-boot:run" }
+    local wrapper = vim.fs.joinpath(root, "mvnw")
+    local wrapper_stat = vim.uv.fs_stat(wrapper)
+    if wrapper_stat and wrapper_stat.type == "file" and vim.fn.executable(wrapper) == 1 then
+      return wrapper, { "spring-boot:run" }
+    end
+    return vim.fn.executable("mvn") == 1 and "mvn" or nil, { "spring-boot:run" }
   elseif kind == "gradle" then
-    local wrapper = root .. "/gradlew"
-    return vim.uv.fs_stat(wrapper) and wrapper or vim.fn.executable("gradle") == 1 and "gradle" or nil, { "bootRun" }
+    local wrapper = vim.fs.joinpath(root, "gradlew")
+    local wrapper_stat = vim.uv.fs_stat(wrapper)
+    if wrapper_stat and wrapper_stat.type == "file" and vim.fn.executable(wrapper) == 1 then
+      return wrapper, { "bootRun" }
+    end
+    return vim.fn.executable("gradle") == 1 and "gradle" or nil, { "bootRun" }
   end
   return nil, nil
+end
+
+function M.info(source)
+  local root = M.root(source)
+  local kind = M.kind(root)
+  local environment = root and M.environment(root) or {
+    env = {},
+    sources = {},
+    source_by_key = {},
+    resolved_source = "none",
+  }
+  local command = root and M.command(root) or nil
+  return {
+    root = root,
+    kind = kind,
+    profile = root and M.profile(root) or "default",
+    env = environment.env,
+    env_sources = environment.sources,
+    env_source = environment.resolved_source,
+    command = command,
+    runnable = command ~= nil,
+  }
+end
+
+function M.inspect(source)
+  local info = M.info(source)
+  local lines = {
+    "Project root: " .. (info.root or "(none)"),
+    "Build system: " .. (info.kind or "(none)"),
+    "Spring profile: " .. info.profile,
+    "Environment source: " .. info.env_source,
+  }
+  if info.kind and not info.runnable then
+    lines[#lines + 1] = (info.kind == "maven" and "Maven" or "Gradle")
+      .. " project has no executable wrapper or system build tool"
+  elseif info.command then
+    lines[#lines + 1] = "Run command: " .. info.command
+  end
+  notify(table.concat(lines, "\n"), vim.log.levels.INFO)
+  return info
 end
 
 function M.task_definition(root, name)

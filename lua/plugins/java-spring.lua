@@ -305,4 +305,16 @@ return {
       return opts
     end,
   },
+  {
+    "folke/which-key.nvim",
+    opts = {
+      spec = {
+        {
+          "<leader>j",
+          group = "Java/Spring",
+          icon = "",
+        },
+      },
+    },
+  },
 }

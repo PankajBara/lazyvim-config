@@ -59,8 +59,11 @@ The system lives in four coordinated areas:
   `pick_test`) with profile env injected.
 
 ### 2.6 Diagnostics & safety
-- A `:SpringProjectInfo` command / `<leader>ji` keymap prints root, build system, active
-  profile, env source, and run command.
+- A `:SpringProjectInfo` command / `<leader>ji` keymap opens a panel (Snacks window, with a
+  `vim.notify` fallback) showing root, build system, active profile, env source, and run command.
+- The active Spring profile is shown in the statusline (`Spring:<profile>`) while editing a file
+  inside a Maven/Gradle project, and the `<leader>j` group is labeled "Java/Spring" in which-key.
+- Notifications route through Snacks when available, falling back to plain `vim.notify`.
 - **Standalone Java files never start JDTLS**: a guard wraps `jdtls.start_or_attach` so JDTLS
   only attaches when a real Maven/Gradle project root exists.
 - Every action that depends on JDTLS / DAP / a build tool first checks availability and shows a
@@ -152,8 +155,8 @@ The system lives in four coordinated areas:
 3. `<leader>jr` — run the app (Overseer task, output in a split).
 4. `<leader>jd` — debug the main class; `<leader>ja` — attach to a running JVM.
 5. `<leader>tt` / `tr` / `tT` / `td` — run/debug tests (env injected with the active profile).
-6. `<leader>ji` (or `:SpringProjectInfo`) — see root, build system, profile, env source, run
-   command at a glance.
+6. `<leader>ji` (or `:SpringProjectInfo`) — opens a panel with root, build system, profile, env
+   source, and run command at a glance. The statusline shows `Spring:<profile>` in Java projects.
 
 ### 4.2 Standalone scratch Java
 - Open a lone `.java` (no `pom.xml`/`build.gradle` nearby) with `javac`/`java` installed →

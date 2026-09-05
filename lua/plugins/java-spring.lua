@@ -75,7 +75,7 @@ return {
                 if client and not is_stopped(client) then
                   for _, action in ipairs(result) do
                     local title = type(action.title) == "string" and action.title or ""
-                    if title:lower():match("add[%w%s]*import") and action.edit then
+                    if title:lower():find("add import", 1, true) and action.edit then
                       local ok = pcall(
                         vim.lsp.util.apply_workspace_edit,
                         action.edit,
@@ -87,7 +87,7 @@ return {
                 end
               end
             end
-            if applied or #clients > 0 then
+            if #clients > 0 then
               pcall(require("jdtls").organize_imports)
             end
           end)

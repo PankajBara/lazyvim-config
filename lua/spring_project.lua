@@ -405,18 +405,55 @@ function M.run(source)
   end
   local definition = M.task_definition(root)
   if not definition then
-    notify("No runnable Spring Boot task found (wrapper or build tool missing)")
+    local kind = M.kind(root)
+    if kind then
+      notify((kind == "maven" and "Maven" or "Gradle") .. " project detected, but no executable wrapper or system build tool is available")
+    else
+      notify("No Maven or Gradle project root found")
+    end
     return
   end
   require("overseer").new_task(definition):start()
 end
 
 local function jdtls_available(bufnr)
-  if not vim.lsp.get_clients({ bufnr = bufnr or 0, name = "jdtls" })[1] then
+  local ok, clients = pcall(vim.lsp.get_clients, { bufnr = bufnr or 0, name = "jdtls" })
+  if not ok or not clients[1] then
     notify("No JDTLS client is attached to this Java buffer")
     return false
   end
   return true
+end
+
+local function dap_available()
+  local ok, dap = pcall(require, "dap")
+  if not ok or type(dap) ~= "table" or type(dap.run) ~= "function" then
+    notify("Java DAP is unavailable; install java-debug-adapter and java-test")
+    return nil
+  end
+  if dap.adapters and dap.adapters.java == nil then
+    notify("Java DAP adapter is unavailable; install java-debug-adapter")
+    return nil
+  end
+  return dap
+end
+
+local function jdtls_dap_available()
+  local ok, dap = pcall(require, "jdtls.dap")
+  if not ok or type(dap) ~= "table" then
+    notify("JDTLS Java test/debug support is unavailable; install jdtls and java-test")
+    return nil
+  end
+  return dap
+end
+
+local function build_available(root)
+  if M.command(root) then
+    return true
+  end
+  local kind = M.kind(root)
+  notify((kind == "maven" and "Maven" or "Gradle") .. " project detected, but no executable wrapper or system build tool is available")
+  return false
 end
 
 function M.debug_main(source)
@@ -429,7 +466,12 @@ function M.debug_main(source)
   if not jdtls_available(bufnr) then
     return
   end
-  require("jdtls.dap").fetch_main_configs({ config_overrides = { env = M.env(root) } }, function(configs)
+  local dap = dap_available()
+  local jdtls_dap = jdtls_dap_available()
+  if not dap or not jdtls_dap or not build_available(root) then
+    return
+  end
+  jdtls_dap.fetch_main_configs({ config_overrides = { env = M.env(root) } }, function(configs)
     if #configs == 0 then
       notify("No Java main class found")
       return
@@ -444,7 +486,7 @@ function M.debug_main(source)
       end,
     }, function(config)
       if config then
-        require("dap").run(config)
+        dap.run(config)
       end
     end)
   end)
@@ -453,6 +495,10 @@ end
 function M.attach(bufnr)
   bufnr = bufnr or 0
   if not jdtls_available(bufnr) then
+    return
+  end
+  local dap = dap_available()
+  if not dap then
     return
   end
   vim.ui.input({ prompt = "Remote JVM host: ", default = "127.0.0.1" }, function(host)
@@ -468,7 +514,7 @@ function M.attach(bufnr)
         notify("Remote JVM port must be between 1 and 65535")
         return
       end
-      require("dap").run({
+      dap.run({
         type = "java",
         request = "attach",
         name = ("Attach Java %s:%d"):format(host, number),

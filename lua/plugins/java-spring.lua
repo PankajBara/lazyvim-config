@@ -67,7 +67,6 @@ return {
             if not vim.api.nvim_buf_is_valid(bufnr) then
               return
             end
-            local applied = false
             for client_id, response in pairs(responses or {}) do
               local result = response and response.result
               if result then
@@ -81,7 +80,8 @@ return {
                         action.edit,
                         client.offset_encoding or "utf-16"
                       )
-                      applied = applied or ok
+                      -- A failed edit should not prevent organizing imports from running.
+                      _ = ok
                     end
                   end
                 end

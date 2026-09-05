@@ -20,12 +20,71 @@ return {
     "mfussenegger/nvim-jdtls",
     dependencies = { "JavaHello/spring-boot.nvim" },
     init = function()
+      local group = vim.api.nvim_create_augroup("JavaSpringJdtls", { clear = true })
       vim.api.nvim_create_autocmd("BufWritePre", {
+        group = group,
         pattern = "*.java",
-        callback = function()
-          if vim.lsp.get_clients({ bufnr = 0, name = "jdtls" })[1] then
-            pcall(require("jdtls").organize_imports)
+        callback = function(args)
+          local bufnr = args.buf
+          if not vim.api.nvim_buf_is_valid(bufnr) then
+            return
           end
+
+          local clients = vim.lsp.get_clients({ bufnr = bufnr, name = "jdtls" })
+          if #clients == 0 then
+            return
+          end
+          clients = vim.tbl_filter(function(client)
+            local stopped = false
+            if client.is_stopped then
+              local ok, value = pcall(client.is_stopped, client)
+              stopped = ok and value or false
+            end
+            return not stopped
+          end, clients)
+          if #clients == 0 then
+            return
+          end
+
+          local line_count = vim.api.nvim_buf_line_count(bufnr)
+          local last_line = math.max(line_count - 1, 0)
+          local last_text = vim.api.nvim_buf_get_lines(bufnr, last_line, last_line + 1, false)[1] or ""
+          local params = {
+            textDocument = { uri = vim.uri_from_bufnr(bufnr) },
+            range = {
+              start = { line = 0, character = 0 },
+              finish = { line = last_line, character = #last_text },
+            },
+            context = {
+              only = { "quickfix" },
+              diagnostics = vim.diagnostic.get(bufnr),
+            },
+          }
+
+          vim.lsp.buf_request_all(bufnr, "textDocument/codeAction", params, function(responses)
+            if not vim.api.nvim_buf_is_valid(bufnr) then
+              return
+            end
+            local applied = false
+            for client_id, response in pairs(responses or {}) do
+              local result = response and response.result
+              if result then
+                local client = vim.lsp.get_client_by_id(client_id)
+                if client and (not client.is_stopped or not client:is_stopped()) then
+                  for _, action in ipairs(result) do
+                    local title = type(action.title) == "string" and action.title or ""
+                    if title:lower():find("add import", 1, true) and action.edit then
+                      vim.lsp.util.apply_workspace_edit(action.edit, client.offset_encoding or "utf-16")
+                      applied = true
+                    end
+                  end
+                end
+              end
+            end
+            if applied or #clients > 0 then
+              pcall(require("jdtls").organize_imports)
+            end
+          end)
         end,
       })
     end,

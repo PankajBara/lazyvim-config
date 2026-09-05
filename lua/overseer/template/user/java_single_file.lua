@@ -9,6 +9,49 @@ local function source_file()
   return vim.uv.fs_stat(path) and vim.fs.normalize(path) or nil
 end
 
+local function sibling_sources(directory)
+  local sources = {}
+  local handle = vim.uv.fs_scandir(directory)
+  if not handle then
+    return sources
+  end
+
+  while true do
+    local name = vim.uv.fs_scandir_next(handle)
+    if not name then
+      break
+    end
+    if vim.fn.fnamemodify(name, ":e"):lower() == "java" then
+      local path = vim.fs.normalize(vim.fs.joinpath(directory, name))
+      local stat = vim.uv.fs_stat(path)
+      if stat and stat.type == "file" then
+        sources[#sources + 1] = path
+      end
+    end
+  end
+
+  table.sort(sources)
+  return sources
+end
+
+local function package_name(source)
+  local file = io.open(source, "r")
+  if not file then
+    return nil
+  end
+
+  for line in file:lines() do
+    local package = line:match("^%s*package%s+([%a_$][%w_$%.]*)%s*;")
+    if package then
+      file:close()
+      return package
+    end
+  end
+
+  file:close()
+  return nil
+end
+
 return {
   name = "Java single file",
   -- Only offer this for standalone files: there is no Maven/Gradle project root,
@@ -30,7 +73,17 @@ return {
 
     local cwd = vim.fs.dirname(source)
     local class = vim.fn.fnamemodify(source, ":t:r")
-    local compile = 'javac -d "$1" "$2" && java -cp "$1" "$3"'
+    local package = package_name(source)
+    local main_class = package and (package .. "." .. class) or class
+    local sources = sibling_sources(cwd)
+    local quoted_sources = {}
+    for _, path in ipairs(sources) do
+      quoted_sources[#quoted_sources + 1] = vim.fn.shellescape(path)
+    end
+    local compile = ("javac -d \"$1\" %s && java -cp \"$1\" %s"):format(
+      table.concat(quoted_sources, " "),
+      vim.fn.shellescape(main_class)
+    )
 
     cb({
       {
@@ -38,7 +91,7 @@ return {
         builder = function()
           return {
             cmd = "sh",
-            args = { "-c", compile, "java-single", output_dir, source, class },
+            args = { "-c", compile, "java-single", output_dir },
             cwd = cwd,
             components = {
               { "open_output", on_start = "always", direction = "horizontal", focus = true },

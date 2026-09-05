@@ -76,6 +76,10 @@ return {
     local package = package_name(source)
     local main_class = package and (package .. "." .. class) or class
     local sources = sibling_sources(cwd)
+    if not vim.tbl_contains(sources, source) then
+      sources[#sources + 1] = source
+      table.sort(sources)
+    end
     local quoted_sources = {}
     for _, path in ipairs(sources) do
       quoted_sources[#quoted_sources + 1] = vim.fn.shellescape(path)

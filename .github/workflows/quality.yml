@@ -29,8 +29,6 @@ jobs:
           neovim: true
       - name: Check Lua formatting
         uses: JohnnyMorganz/stylua-action@479972f01e665acfcba96ada452c36608bdbbb5e
-        with:
-          version: 2.3.1
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --check .
       - name: Run clean unit tests

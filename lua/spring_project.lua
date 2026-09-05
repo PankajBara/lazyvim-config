@@ -507,7 +507,13 @@ build_available = function(root)
   local kind = M.kind(root)
   notify(
     (kind == "maven" and "Maven" or "Gradle")
-      .. " project detected, but no executable wrapper or system build tool is available"
+      .. " project detected at "
+      .. root
+      .. ", but no executable wrapper or system build tool is available. Try `chmod +x "
+      .. (kind == "maven" and "mvnw" or "gradlew")
+      .. "` or install "
+      .. (kind == "maven" and "Maven" or "Gradle")
+      .. " on PATH."
   )
   return false
 end

@@ -164,17 +164,19 @@ local inspected = spring.inspect(fixture .. "/maven")
 assert(type(inspected) == "table" and inspected.root == fixture .. "/maven", "Inspect returns project info")
 
 -- Overseer template conditions must fire only in the correct context.
+-- They evaluate buffer 0 / cwd, so chdir into each scenario first.
 local single_file = require("overseer.template.user.java_single_file")
 local build = require("overseer.template.user.java_build")
-assert(single_file.condition.callback() == false, "Single-file template is disabled inside a Maven project")
+local original_cwd = vim.uv.cwd()
+vim.api.nvim_set_current_dir(fixture .. "/maven")
 assert(build.condition.callback() == true, "Build template is enabled inside a Maven project")
+assert(single_file.condition.callback() == false, "Single-file template is disabled inside a Maven project")
 
-local empty_dir = vim.fn.tempname()
-vim.fn.mkdir(empty_dir, "p")
-vim.api.nvim_set_current_dir(empty_dir)
+vim.api.nvim_set_current_dir(standalone)
+assert(single_file.condition.callback() == true, "Single-file template is enabled for a standalone Java file")
 assert(build.condition.callback() == false, "Build template is disabled outside a project")
-vim.fn.delete(empty_dir, "rf")
-vim.api.nvim_set_current_dir(vim.uv.cwd())
+
+vim.api.nvim_set_current_dir(original_cwd)
 
 vim.g.spring_project_state_file = original_state_file
 vim.fn.delete(fixture, "rf")

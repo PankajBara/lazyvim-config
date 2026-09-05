@@ -173,8 +173,10 @@ assert(build.condition.callback() == true, "Build template is enabled inside a M
 assert(single_file.condition.callback() == false, "Single-file template is disabled inside a Maven project")
 
 vim.api.nvim_set_current_dir(standalone)
-assert(single_file.condition.callback() == true, "Single-file template is enabled for a standalone Java file")
 assert(build.condition.callback() == false, "Build template is disabled outside a project")
+if vim.fn.executable("javac") == 1 and vim.fn.executable("java") == 1 then
+  assert(single_file.condition.callback() == true, "Single-file template is enabled for a standalone Java file")
+end
 
 vim.api.nvim_set_current_dir(original_cwd)
 

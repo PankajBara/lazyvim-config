@@ -18,7 +18,13 @@ local ignored_dirs = {
 }
 
 local function notify(message, level)
-  vim.notify(message, level or vim.log.levels.WARN, { title = "Spring" })
+  level = level or vim.log.levels.WARN
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.notify then
+    snacks.notify(message, { title = "Spring", level = level })
+    return
+  end
+  vim.notify(message, level, { title = "Spring" })
 end
 
 local function trim(value)

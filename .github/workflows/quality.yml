@@ -23,12 +23,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Install Neovim
-        uses: rhysd/action-setup-vim@0123456789abcdef0123456789abcdef01234567
+        uses: rhysd/action-setup-vim@febef33995d6649302e9d88dda81e071b68f16a7
         with:
           version: v0.11.2
           neovim: true
       - name: Check Lua formatting
-        uses: JohnnyMorganz/stylua-action@123456789abcdef0123456789abcdef012345678
+        uses: JohnnyMorganz/stylua-action@479972f01e665acfcba96ada452c36608bdbbb5e
         with:
           version: 2.3.1
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -40,7 +40,7 @@ jobs:
           nvim --clean --headless -l tests/task_output.lua
           nvim --clean --headless -l tests/health.lua
       - name: Cache pinned Lazy and Mason data
-        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: |
             ${{ runner.temp }}/xdg/data/nvim/lazy
@@ -67,7 +67,7 @@ jobs:
           sed -n '1,120p' lazy-lock.json
       - name: Upload bootstrap logs
         if: always()
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: required-bootstrap-logs
           path: |
@@ -84,14 +84,14 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Check out repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Install JDK 21
-        uses: actions/setup-java@7a445eeccf3c9f7a4c3c6f6f0f4f7f8f6f6f6f6f
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
         with:
           distribution: temurin
           java-version: "21"
       - name: Install Neovim
-        uses: rhysd/action-setup-vim@0123456789abcdef0123456789abcdef01234567
+        uses: rhysd/action-setup-vim@febef33995d6649302e9d88dda81e071b68f16a7
         with:
           version: v0.11.2
           neovim: true

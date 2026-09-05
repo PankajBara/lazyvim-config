@@ -48,6 +48,13 @@ local ok, err = xpcall(function()
   assert(find(results, "Mason package missing: jdtls") == "warn", "Missing Java package should warn")
   assert(find(results, "OSC 52 clipboard support") == "ok", "Remote sessions should report OSC 52")
   assert(find(results, "Wayland is active") == "warn", "Missing Wayland clipboard tools should warn")
+
+  -- The Spring section must never crash the base report and must report
+  -- detection state for the current directory (the config dir is not a
+  -- Maven/Gradle project, so it should report no root).
+  local spring_report = find(results, "Maven or Gradle project root") == "info"
+    or find(results, "Spring project detected") == "ok"
+  assert(spring_report, "Spring section must report project detection state")
 end, debug.traceback)
 
 vim.fn.delete(fixture, "rf")

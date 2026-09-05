@@ -382,7 +382,22 @@ function M.inspect(source)
   elseif info.command then
     lines[#lines + 1] = "Run command: " .. info.command
   end
-  notify(table.concat(lines, "\n"), vim.log.levels.INFO)
+  local text = table.concat(lines, "\n")
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.win then
+    snacks.win({
+      title = "Spring Project",
+      text = text,
+      width = 0.5,
+      height = 0.4,
+      border = "rounded",
+      position = "center",
+      relative = "editor",
+      wo = { wrap = true },
+    })
+  else
+    notify(text, vim.log.levels.INFO)
+  end
   return info
 end
 

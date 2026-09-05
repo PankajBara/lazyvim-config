@@ -80,8 +80,15 @@ Java mappings are buffer-local and appear after JDTLS attaches.
 | `<leader>ac` | Open a CodeCompanion chat in an editor buffer |
 | `<leader>aa` | Open an inline CodeCompanion refactor prompt on the buffer/selection |
 | `<leader>ai` | Open the CodeCompanion actions palette |
+| `<C-k>` (insert mode) | Show or hide Blink signature help |
+| `gK` (normal mode) | Show Java/LSP signature help |
 
 The Java test mappings override equivalent Neotest mappings only in Java buffers.
+
+Blink's signature-help window is enabled for LSPs that advertise
+`textDocument/signatureHelp`. In Java buffers, JDTLS supplies the parameter
+signatures automatically after trigger characters such as `(` and `,`; use
+`<C-k>` in insert mode or `gK` in normal mode to open it manually.
 
 ### Essential LazyVim mappings
 

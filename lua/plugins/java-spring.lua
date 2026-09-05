@@ -2,6 +2,23 @@
 -- this file augments its settings and adds Spring-aware tooling around it.
 return {
   {
+    "saghen/blink.cmp",
+    opts = function(_, opts)
+      -- JDTLS advertises signature-help trigger/retrigger characters (for
+      -- example, `(` and `,`). Keep LazyVim's existing completion, popup,
+      -- documentation, and keymap settings while enabling Blink's window.
+      opts.signature = vim.tbl_deep_extend("force", opts.signature or {}, {
+        enabled = true,
+        trigger = {
+          enabled = true,
+          show_on_trigger_character = true,
+          show_on_insert_on_trigger_character = true,
+        },
+      })
+      return opts
+    end,
+  },
+  {
     "mason-org/mason.nvim",
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}

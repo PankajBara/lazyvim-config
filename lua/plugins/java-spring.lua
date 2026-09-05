@@ -286,4 +286,33 @@ return {
       },
     },
   },
+  {
+    "nvim-lualine/lualine.nvim",
+    opts = function(_, opts)
+      local spring = require("spring_project")
+      local component = {
+        function()
+          return spring.statusline()
+        end,
+        cond = function()
+          return spring.statusline() ~= ""
+        end,
+        color = { fg = "#7daea3" },
+      }
+      local extensions = opts.extensions or {}
+      opts.extensions = extensions
+      -- Insert the Spring indicator into the right section of each section set.
+      for _, sections in pairs(opts.sections or {}) do
+        if sections then
+          table.insert(sections, #sections, component)
+        end
+      end
+      for _, sections in pairs(opts.inactive_sections or {}) do
+        if sections then
+          table.insert(sections, #sections, component)
+        end
+      end
+      return opts
+    end,
+  },
 }

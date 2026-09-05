@@ -587,4 +587,16 @@ function M.attach(bufnr)
   end)
 end
 
+-- Compact indicator for the statusline: the active Spring profile (or a dash
+-- when no profile is selected), empty when the current buffer has no Maven or
+-- Gradle project root. Guarded so it never errors outside a project.
+function M.statusline()
+  local ok, root = pcall(M.root, 0)
+  if not ok or not root then
+    return ""
+  end
+  local profile = M.profile(root)
+  return " Spring:" .. (profile == "default" and "—" or profile)
+end
+
 return M

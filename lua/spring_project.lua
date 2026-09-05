@@ -447,6 +447,8 @@ local function jdtls_dap_available()
   return dap
 end
 
+local build_available
+
 function M.dap()
   return dap_available()
 end
@@ -467,7 +469,7 @@ function M.jdtls_dap(bufnr)
   return jdtls_dap_available()
 end
 
-local function build_available(root)
+build_available = function(root)
   if M.command(root) then
     return true
   end

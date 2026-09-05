@@ -39,6 +39,7 @@ Run `:checkhealth workstation` after installation or when a tool-backed feature 
 
 - Neovim 0.11.2+, LuaJIT, Git, ripgrep, and a C compiler
 - Java, Maven/Gradle, and the configured Mason Java and Copilot packages
+- Spring project detection, active profile, and resolved environment source for the current buffer
 - task runtimes, AI CLIs, lazygit, and context-appropriate clipboard tools
 - writable runtime/cache directories and the generated or fallback theme configuration
 - OSC 52 support in tmux, SSH, and Herdr sessions, plus Wayland clipboard support when Wayland is active

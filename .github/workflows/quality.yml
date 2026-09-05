@@ -23,12 +23,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Install Neovim
-        uses: rhysd/action-setup-vim@8f4f5f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f
+        uses: rhysd/action-setup-vim@8f4f5f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f
         with:
           version: v0.11.2
           neovim: true
       - name: Check Lua formatting
-        uses: JohnnyMorganz/stylua-action@9f7f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f
+        uses: JohnnyMorganz/stylua-action@9f7f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f
         with:
           version: 2.3.1
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -91,7 +91,7 @@ jobs:
           distribution: temurin
           java-version: "21"
       - name: Install Neovim
-        uses: rhysd/action-setup-vim@8f4f5f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f
+        uses: rhysd/action-setup-vim@8f4f5f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f
         with:
           version: v0.11.2
           neovim: true

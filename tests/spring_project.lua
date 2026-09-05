@@ -135,6 +135,8 @@ assert_equal(spring.command(standalone), nil, "Standalone file has no build comm
 -- The env_source helpers must report the driver of SPRING_PROFILES_ACTIVE.
 -- The existing maven fixture has a selected "prod" profile and dotenv files,
 -- so the profile should win and be reported as the resolved source.
+vim.g.spring_project_state_file = fixture .. "/state/profiles.json"
+assert(spring.set_profile(fixture .. "/maven", "prod"), "Re-select prod profile for info tests")
 local maven_info = spring.info(fixture .. "/maven")
 assert_equal(maven_info.kind, "maven", "Info reports maven build system")
 assert_equal(maven_info.profile, "prod", "Info reports active profile")

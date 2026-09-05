@@ -77,7 +77,9 @@ return {
     priority = 1000,
   },
   {
-    "gthelding/monokai-pro.nvim",
+    -- The original gthelding repository is no longer publicly cloneable.
+    -- Use the maintained fork so Lazy can install this optional theme.
+    "loctvl842/monokai-pro.nvim",
     lazy = true,
     priority = 1000,
   },

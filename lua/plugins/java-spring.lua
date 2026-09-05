@@ -146,6 +146,23 @@ return {
       opts.root_dir = function(path)
         return require("spring_project").root(path)
       end
+
+      -- nvim-jdtls falls back to the current working directory when a config
+      -- has no root_dir. Guard its automatic startup as well, otherwise a
+      -- standalone file can still launch JDTLS despite the nil project root.
+      local jdtls = require("jdtls")
+      if not jdtls._workstation_project_guard then
+        local start_or_attach = jdtls.start_or_attach
+        jdtls.start_or_attach = function(config, start_opts, start_config)
+          local bufnr = (start_config and start_config.bufnr) or vim.api.nvim_get_current_buf()
+          if not require("spring_project").root(bufnr) then
+            return
+          end
+          return start_or_attach(config, start_opts, start_config)
+        end
+        jdtls._workstation_project_guard = true
+      end
+
       local previous_on_attach = opts.on_attach
       opts.on_attach = function(args)
         if previous_on_attach then

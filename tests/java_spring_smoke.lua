@@ -29,11 +29,19 @@ assert(require("overseer"), "Overseer did not load")
 assert(require("dap").adapters.java, "Java DAP adapter is not configured")
 assert(#require("spring_boot").java_extensions() > 0, "Spring Java extensions did not load")
 
+-- The inspected project must report a detected build system and a runnable
+-- command for either Maven or Gradle.
+local spring = require("spring_project")
+local info = spring.info(java_file)
+assert(info.kind == "maven" or info.kind == "gradle", "Project build system must be detected")
+assert(info.runnable, "Project must have a runnable build command")
+
 local expected = {
   [" jp"] = "Select Spring Profile",
   [" jr"] = "Run Spring Boot",
   [" jd"] = "Debug Java Main Class",
   [" ja"] = "Attach Remote JVM",
+  [" jt"] = "Inspect Java Project",
   [" tt"] = "Run All Test",
   [" tr"] = "Run Nearest Test",
   [" tT"] = "Run Test",

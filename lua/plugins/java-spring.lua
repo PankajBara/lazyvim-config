@@ -1,5 +1,11 @@
 -- Java/Spring workstation integration. The Java extra owns the JDTLS lifecycle;
 -- this file augments its settings and adds Spring-aware tooling around it.
+if vim.fn.exists(":SpringProjectInfo") == 0 then
+  vim.api.nvim_create_user_command("SpringProjectInfo", function()
+    require("spring_project").inspect(0)
+  end, { desc = "Inspect Java/Spring project detection" })
+end
+
 return {
   {
     "saghen/blink.cmp",
@@ -37,11 +43,6 @@ return {
     "mfussenegger/nvim-jdtls",
     dependencies = { "JavaHello/spring-boot.nvim" },
     init = function()
-      if vim.fn.exists(":SpringProjectInfo") == 0 then
-        vim.api.nvim_create_user_command("SpringProjectInfo", function()
-          require("spring_project").inspect(0)
-        end, { desc = "Inspect Java/Spring project detection" })
-      end
       local group = vim.api.nvim_create_augroup("JavaSpringJdtls", { clear = true })
       vim.api.nvim_create_autocmd("BufWritePre", {
         group = group,

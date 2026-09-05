@@ -93,7 +93,53 @@ assert(
   "State must not contain environment values"
 )
 
+-- Non-executable wrapper must never be returned; fall back to the system tool
+-- (or nil when none is installed) rather than invoking an unexecutable file.
+local non_exec = vim.fn.tempname()
+vim.fn.mkdir(non_exec .. "/maven/src/main/resources", "p")
+vim.fn.writefile({ "<project/>" }, non_exec .. "/maven/pom.xml")
+vim.fn.writefile({ "#!/bin/sh" }, non_exec .. "/maven/mvnw")
+vim.fn.setfperm(non_exec .. "/maven/mvnw", "r--r--r--")
+local ne_cmd = spring.command(non_exec .. "/maven")
+assert(ne_cmd ~= non_exec .. "/maven/mvnw", "Non-executable wrapper must not be used")
+assert(ne_cmd == nil or vim.fn.executable(ne_cmd) == 1, "Fallback must be a system tool or nil")
+
+-- Malformed profile state must not break profile selection.
+vim.g.spring_project_state_file = fixture .. "/state/broken.json"
+vim.fn.writefile({ "{ this is not valid json" }, vim.g.spring_project_state_file)
+assert_equal(
+  spring.profile(fixture .. "/maven"),
+  "default",
+  "Profile selection survives malformed state file"
+)
+assert_equal(
+  spring.env(fixture .. "/maven").SPRING_PROFILES_ACTIVE,
+  "from-dotenv",
+  "Env still resolves with malformed state"
+)
+
+-- Missing and malformed dotenv files must not crash env resolution.
+local dotenv_root = vim.fn.tempname()
+vim.fn.mkdir(dotenv_root .. "/src/main/resources", "p")
+vim.fn.writefile({ "<project/>" }, dotenv_root .. "/pom.xml")
+vim.fn.setfperm(dotenv_root .. "/pom.xml", "r--r--r--")
+vim.fn.writefile({ "BROKEN_LINE_NO_EQUALS" }, dotenv_root .. "/.env")
+assert_equal(spring.env(dotenv_root), {}, "Malformed dotenv resolves to empty env without error")
+vim.fn.delete(dotenv_root .. "/.env")
+assert_equal(spring.env(dotenv_root), {}, "Missing dotenv resolves to empty env without error")
+
+-- A standalone Java file (no project markers) must not report a root or command.
+local standalone = vim.fn.tempname()
+vim.fn.mkdir(standalone, "p")
+local standalone_file = standalone .. "/App.java"
+vim.fn.writefile({ "public class App {}", standalone_file })
+assert_equal(spring.root(standalone_file), nil, "Standalone file has no project root")
+assert_equal(spring.command(standalone), nil, "Standalone file has no build command")
+
 vim.g.spring_project_state_file = original_state_file
 vim.fn.delete(fixture, "rf")
+vim.fn.delete(non_exec, "rf")
+vim.fn.delete(dotenv_root, "rf")
+vim.fn.delete(standalone, "rf")
 
 print("spring_project tests: ok")

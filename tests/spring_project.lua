@@ -132,7 +132,7 @@ assert_equal(spring.env(dotenv_root), {}, "Missing dotenv resolves to empty env 
 local standalone = vim.fn.tempname()
 vim.fn.mkdir(standalone, "p")
 local standalone_file = standalone .. "/App.java"
-vim.fn.writefile({ "public class App {}", standalone_file })
+vim.fn.writefile({ "public class App {}" }, standalone_file)
 assert_equal(spring.root(standalone_file), nil, "Standalone file has no project root")
 assert_equal(spring.command(standalone), nil, "Standalone file has no build command")
 

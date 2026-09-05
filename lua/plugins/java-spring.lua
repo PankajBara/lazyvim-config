@@ -26,6 +26,13 @@ return {
         pattern = "*.java",
         callback = function(args)
           local bufnr = args.buf
+          local is_stopped = function(client)
+            if type(client.is_stopped) == "function" then
+              local ok, stopped = pcall(client.is_stopped, client)
+              return ok and stopped or false
+            end
+            return client.is_stopped == true
+          end
           if not vim.api.nvim_buf_is_valid(bufnr) then
             return
           end
@@ -35,12 +42,7 @@ return {
             return
           end
           clients = vim.tbl_filter(function(client)
-            local stopped = false
-            if client.is_stopped then
-              local ok, value = pcall(client.is_stopped, client)
-              stopped = ok and value or false
-            end
-            return not stopped
+            return not is_stopped(client)
           end, clients)
           if #clients == 0 then
             return
@@ -70,7 +72,7 @@ return {
               local result = response and response.result
               if result then
                 local client = vim.lsp.get_client_by_id(client_id)
-                if client and (not client.is_stopped or not client:is_stopped()) then
+                if client and not is_stopped(client) then
                   for _, action in ipairs(result) do
                     local title = type(action.title) == "string" and action.title or ""
                     if title:lower():find("add import", 1, true) and action.edit then

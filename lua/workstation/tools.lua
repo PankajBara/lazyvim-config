@@ -5,7 +5,8 @@ return {
     "java-test",
     "vscode-spring-boot-tools",
   },
-  mason_ai = {
-    "copilot-language-server",
-  },
+  -- Copilot's native Neovim completion/language server is intentionally not
+  -- installed. Sidekick and CodeCompanion use the authenticated `copilot`
+  -- CLI directly instead.
+  mason_ai = {},
 }

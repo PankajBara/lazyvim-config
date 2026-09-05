@@ -1,6 +1,5 @@
 -- In-editor AI chat and inline edits backed by the GitHub Copilot CLI (ACP).
--- Requires an authenticated `copilot` CLI on PATH (the same GitHub account used
--- by the copilot-native completion extra); it reuses that login with no extra
+-- Requires an authenticated `copilot` CLI on PATH; it reuses that login with no extra
 -- auth step. Run `copilot auth` once if the CLI has not been signed in.
 return {
   {

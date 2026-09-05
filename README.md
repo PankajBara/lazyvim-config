@@ -87,6 +87,8 @@ Java mappings are buffer-local and appear after JDTLS attaches.
 
 The Java test mappings override equivalent Neotest mappings only in Java buffers.
 
+The active Spring profile is shown in the statusline (`Spring:<profile>`) whenever the current buffer belongs to a Maven or Gradle project, and `<leader>ji` opens a panel with the detected root, build system, active profile, and resolved environment source. The `<leader>j` group is labeled "Java/Spring" in which-key.
+
 Blink's signature-help window is enabled for LSPs that advertise
 `textDocument/signatureHelp`. In Java buffers, JDTLS supplies the parameter
 signatures automatically after trigger characters such as `(` and `,`; use

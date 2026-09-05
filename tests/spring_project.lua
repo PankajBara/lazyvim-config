@@ -177,7 +177,7 @@ assert(build.condition.callback() == false, "Build template is disabled outside 
 if vim.fn.executable("javac") == 1 and vim.fn.executable("java") == 1 then
   assert(single_file.condition.callback() == true, "Single-file template is enabled for a standalone Java file")
 end
-vim.cmd.edit(vim.fn.fnameescape(vim.fs.joinpath(fixture, "maven", "src", "main", "java", "dev", "workstation", "App.java")))
+vim.cmd.edit(vim.fn.fnameescape("tests/fixtures/java/src/main/java/dev/workstation/App.java"))
 
 vim.api.nvim_set_current_dir(original_cwd)
 

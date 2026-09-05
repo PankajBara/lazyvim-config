@@ -447,6 +447,26 @@ local function jdtls_dap_available()
   return dap
 end
 
+function M.dap()
+  return dap_available()
+end
+
+function M.jdtls_dap(bufnr)
+  bufnr = bufnr or 0
+  if not jdtls_available(bufnr) then
+    return nil
+  end
+  local root = M.root(bufnr)
+  if not root then
+    notify("No Maven or Gradle project root found")
+    return nil
+  end
+  if not build_available(root) then
+    return nil
+  end
+  return jdtls_dap_available()
+end
+
 local function build_available(root)
   if M.command(root) then
     return true

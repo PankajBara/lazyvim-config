@@ -218,6 +218,8 @@ The required GitHub Actions job uses Neovim 0.11.2 and pinned StyLua 2.3.1. It r
 
 The separately retryable Java integration job uses Temurin JDK 21, caches Lazy and Mason data using `lazy-lock.json`, installs the configured Java tooling with a bounded helper, and runs the fixture-backed smoke test. This job remains visible but non-blocking because external registries and tool downloads can fail independently of the configuration. Superseded runs on the same branch are cancelled, and the workflow has read-only repository permissions.
 
+Third-party actions in `.github/workflows/quality.yml` are pinned to immutable commit SHAs rather than floating tags. Dependabot (`.github/dependabot.yml`) opens weekly pull requests to refresh them; to update manually, resolve the tag's commit with `gh api repos/<owner>/<repo>/git/ref/tags/<tag>` and replace the SHA in the `uses:` line.
+
 ## Troubleshooting
 
 - Missing icons: select a Nerd Font in the terminal.

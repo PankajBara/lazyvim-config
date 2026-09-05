@@ -76,8 +76,12 @@ return {
                   for _, action in ipairs(result) do
                     local title = type(action.title) == "string" and action.title or ""
                     if title:lower():match("add[%w%s]*import") and action.edit then
-                      vim.lsp.util.apply_workspace_edit(action.edit, client.offset_encoding or "utf-16")
-                      applied = true
+                      local ok = pcall(
+                        vim.lsp.util.apply_workspace_edit,
+                        action.edit,
+                        client.offset_encoding or "utf-16"
+                      )
+                      applied = applied or ok
                     end
                   end
                 end

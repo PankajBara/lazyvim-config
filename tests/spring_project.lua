@@ -172,11 +172,12 @@ vim.api.nvim_set_current_dir(fixture .. "/maven")
 assert(build.condition.callback() == true, "Build template is enabled inside a Maven project")
 assert(single_file.condition.callback() == false, "Single-file template is disabled inside a Maven project")
 
-vim.api.nvim_set_current_dir(standalone)
+vim.cmd.edit(vim.fn.fnameescape(standalone_file))
 assert(build.condition.callback() == false, "Build template is disabled outside a project")
 if vim.fn.executable("javac") == 1 and vim.fn.executable("java") == 1 then
   assert(single_file.condition.callback() == true, "Single-file template is enabled for a standalone Java file")
 end
+vim.cmd.edit(vim.fn.fnameescape(vim.fs.joinpath(fixture, "maven", "src", "main", "java", "dev", "workstation", "App.java")))
 
 vim.api.nvim_set_current_dir(original_cwd)
 

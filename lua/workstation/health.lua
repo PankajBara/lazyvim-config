@@ -99,6 +99,27 @@ function M.collect(overrides)
     ctx.fs_stat(theme) and "Theme configuration is available" or "Theme configuration is missing"
   )
 
+  -- Surface Spring project detection, active profile, and resolved env source
+  -- for the current buffer/working directory so Java/Spring failures are
+  -- diagnosable locally without waiting for CI.
+  local ok_spring, spring = pcall(require, "spring_project")
+  if ok_spring and spring then
+    local info
+    ok_spring, info = pcall(spring.info, 0)
+    if ok_spring and info then
+      if info.root then
+        add(results, "ok", ("Spring project detected: %s (%s)"):format(info.kind, info.root))
+        add(results, "ok", "Active Spring profile: " .. info.profile)
+        add(results, "info", "Resolved environment source: " .. info.env_source)
+        if not info.runnable then
+          add(results, "warn", info.kind .. " project detected but no executable wrapper or build tool")
+        end
+      else
+        add(results, "info", "No Maven or Gradle project root detected for the current buffer")
+      end
+    end
+  end
+
   local remote = ctx.env.TMUX or ctx.env.SSH_TTY or ctx.env.SSH_CONNECTION or ctx.env.HERDR_PANE_ID
   if remote then
     add(results, "ok", "OSC 52 clipboard support is configured for this remote session")

@@ -139,7 +139,7 @@ vim.g.spring_project_state_file = fixture .. "/state/profiles.json"
 assert(spring.set_profile(fixture .. "/maven", "dev"), "Re-select dev profile for info tests")
 local maven_info = spring.info(fixture .. "/maven")
 assert_equal(maven_info.kind, "maven", "Info reports maven build system")
-assert_equal(maven_info.profile, "prod", "Info reports active profile")
+assert_equal(maven_info.profile, "dev", "Info reports active profile")
 assert_equal(maven_info.env_source, "profile:dev", "Profile drives the env source")
 
 -- env_source without a selected profile and without dotenv resolves to "none".

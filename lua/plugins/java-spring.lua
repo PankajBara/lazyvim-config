@@ -53,7 +53,7 @@ return {
             textDocument = { uri = vim.uri_from_bufnr(bufnr) },
             range = {
               start = { line = 0, character = 0 },
-              finish = { line = last_line, character = #last_text },
+              ["end"] = { line = last_line, character = #last_text },
             },
             context = {
               only = { "quickfix" },

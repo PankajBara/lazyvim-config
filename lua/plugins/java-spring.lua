@@ -195,26 +195,35 @@ return {
         end, "Attach Remote JVM")
         map("<leader>tt", function()
           local dap = require("spring_project").jdtls_dap()
-          if dap then
+          if dap and type(dap.test_class) == "function" then
             dap.test_class({ config_overrides = test_overrides() })
+          elseif dap then
+            vim.notify("Java test support is unavailable; install java-test", vim.log.levels.WARN, { title = "Spring" })
           end
         end, "Run All Test")
         map("<leader>tr", function()
           local dap = require("spring_project").jdtls_dap()
-          if dap then
+          if dap and type(dap.test_nearest_method) == "function" then
             dap.test_nearest_method({ config_overrides = test_overrides() })
+          elseif dap then
+            vim.notify("Java test support is unavailable; install java-test", vim.log.levels.WARN, { title = "Spring" })
           end
         end, "Run Nearest Test")
         map("<leader>tT", function()
           local dap = require("spring_project").jdtls_dap()
-          if dap then
+          if dap and type(dap.pick_test) == "function" then
             dap.pick_test({ config_overrides = test_overrides() })
+          elseif dap then
+            vim.notify("Java test support is unavailable; install java-test", vim.log.levels.WARN, { title = "Spring" })
           end
         end, "Run Test")
         map("<leader>td", function()
           local dap = require("spring_project").jdtls_dap()
           local debug = require("spring_project").dap()
-          if not dap or not debug then
+          if not dap or not debug or type(dap.test_nearest_method) ~= "function" then
+            if dap and debug then
+              vim.notify("Java test support is unavailable; install java-test", vim.log.levels.WARN, { title = "Spring" })
+            end
             return
           end
           local overrides = test_overrides() or {}

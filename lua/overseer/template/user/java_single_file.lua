@@ -80,7 +80,7 @@ return {
     for _, path in ipairs(sources) do
       quoted_sources[#quoted_sources + 1] = vim.fn.shellescape(path)
     end
-    local compile = ("javac -d \"$1\" %s && java -cp \"$1\" %s"):format(
+    local compile = ("mkdir -p \"$1\" && javac -d \"$1\" %s && java -cp \"$1\" %s"):format(
       table.concat(quoted_sources, " "),
       vim.fn.shellescape(main_class)
     )

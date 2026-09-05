@@ -111,12 +111,20 @@ jobs:
           ln -s "$GITHUB_WORKSPACE" "$XDG_CONFIG_HOME/nvim"
           nvim --headless -u init.lua "+Lazy! sync" +qa
           timeout 720 nvim --headless -u init.lua -l .github/scripts/install-java-tools.lua
-      - name: Run advisory Java smoke test
+      - name: Run advisory Java smoke test (Maven)
         env:
           XDG_CONFIG_HOME: ${{ github.workspace }}/.ci-config
           XDG_DATA_HOME: ${{ github.workspace }}/.ci-data
           XDG_STATE_HOME: ${{ runner.temp }}/state
           XDG_CACHE_HOME: ${{ runner.temp }}/cache
+        run: timeout 180 nvim --headless -u init.lua -l tests/java_spring_smoke.lua
+      - name: Run advisory Java smoke test (Gradle)
+        env:
+          XDG_CONFIG_HOME: ${{ github.workspace }}/.ci-config
+          XDG_DATA_HOME: ${{ github.workspace }}/.ci-data
+          XDG_STATE_HOME: ${{ runner.temp }}/state
+          XDG_CACHE_HOME: ${{ runner.temp }}/cache
+          JAVA_SPRING_SMOKE_FILE: ${{ github.workspace }}/tests/fixtures/gradle/src/main/java/dev/workstation/App.java
         run: timeout 180 nvim --headless -u init.lua -l tests/java_spring_smoke.lua
       - name: Explain advisory failure
         if: failure()

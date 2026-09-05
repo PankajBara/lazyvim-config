@@ -431,7 +431,13 @@ function M.run(source)
     if kind then
       notify(
         (kind == "maven" and "Maven" or "Gradle")
-          .. " project detected, but no executable wrapper or system build tool is available"
+          .. " project detected at "
+          .. root
+          .. ", but no executable wrapper or system build tool is available. Try `chmod +x "
+          .. (kind == "maven" and "mvnw" or "gradlew")
+          .. "` or install "
+          .. (kind == "maven" and "Maven" or "Gradle")
+          .. " on PATH."
       )
     else
       notify("No Maven or Gradle project root found")

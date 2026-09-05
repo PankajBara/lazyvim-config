@@ -19,6 +19,7 @@ vim.fn.mkdir(fixture .. "/maven/src/test/resources", "p")
 vim.fn.mkdir(fixture .. "/gradle/src/main/resources", "p")
 vim.fn.writefile({ "<project/>" }, fixture .. "/maven/pom.xml")
 vim.fn.writefile({ "#!/bin/sh" }, fixture .. "/maven/mvnw")
+vim.fn.setfperm(fixture .. "/maven/mvnw", "rwxr-xr-x")
 vim.fn.writefile({}, fixture .. "/maven/src/main/resources/application-dev.properties")
 vim.fn.writefile({}, fixture .. "/maven/src/main/resources/application-prod.yml")
 vim.fn.writefile({}, fixture .. "/maven/src/main/resources/application-qa.yaml")
@@ -31,6 +32,7 @@ vim.fn.writefile({}, fixture .. "/maven/src/test/resources/application-test.yml"
 vim.fn.writefile({}, fixture .. "/maven/application-unconventional.yml")
 vim.fn.writefile({ "plugins {}" }, fixture .. "/gradle/build.gradle.kts")
 vim.fn.writefile({ "#!/bin/sh" }, fixture .. "/gradle/gradlew")
+vim.fn.setfperm(fixture .. "/gradle/gradlew", "rwxr-xr-x")
 
 assert_equal(
   spring.root(fixture .. "/maven/src/main/resources/application-dev.properties"),

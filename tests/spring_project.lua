@@ -132,6 +132,35 @@ vim.fn.writefile({ "public class App {}" }, standalone_file)
 assert_equal(spring.root(standalone_file), nil, "Standalone file has no project root")
 assert_equal(spring.command(standalone), nil, "Standalone file has no build command")
 
+-- The env_source helpers must report the driver of SPRING_PROFILES_ACTIVE.
+-- The existing maven fixture has a selected "prod" profile and dotenv files,
+-- so the profile should win and be reported as the resolved source.
+local maven_info = spring.info(fixture .. "/maven")
+assert_equal(maven_info.kind, "maven", "Info reports maven build system")
+assert_equal(maven_info.profile, "prod", "Info reports active profile")
+assert_equal(maven_info.env_source, "profile:prod", "Profile drives the env source")
+
+-- env_source without a selected profile and without dotenv resolves to "none".
+local bare_root = vim.fn.tempname()
+vim.fn.mkdir(bare_root .. "/src/main/resources", "p")
+vim.fn.writefile({ "<project/>" }, bare_root .. "/pom.xml")
+vim.fn.setfperm(bare_root .. "/pom.xml", "r--r--r--")
+assert_equal(spring.env_source(bare_root), "none", "No dotenv and default profile resolves to none")
+
+-- A project with only an .env (no selected non-default profile) reports .env.
+local dotenv_only = vim.fn.tempname()
+vim.fn.mkdir(dotenv_only .. "/src/main/resources", "p")
+vim.fn.writefile({ "<project/>" }, dotenv_only .. "/pom.xml")
+vim.fn.setfperm(dotenv_only .. "/pom.xml", "r--r--r--")
+vim.fn.writefile({ "TOOL=gradle" }, dotenv_only .. "/.env")
+assert_equal(spring.env_source(dotenv_only), ".env", "Dotenv without profile reports .env")
+vim.fn.delete(bare_root, "rf")
+vim.fn.delete(dotenv_only, "rf")
+
+-- inspect() must return the info table without throwing (it only notifies).
+local inspected = spring.inspect(fixture .. "/maven")
+assert(type(inspected) == "table" and inspected.root == fixture .. "/maven", "Inspect returns project info")
+
 vim.g.spring_project_state_file = original_state_file
 vim.fn.delete(fixture, "rf")
 vim.fn.delete(non_exec, "rf")

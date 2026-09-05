@@ -107,11 +107,7 @@ assert(ne_cmd == nil or vim.fn.executable(ne_cmd) == 1, "Fallback must be a syst
 -- Malformed profile state must not break profile selection.
 vim.g.spring_project_state_file = fixture .. "/state/broken.json"
 vim.fn.writefile({ "{ this is not valid json" }, vim.g.spring_project_state_file)
-assert_equal(
-  spring.profile(fixture .. "/maven"),
-  "default",
-  "Profile selection survives malformed state file"
-)
+assert_equal(spring.profile(fixture .. "/maven"), "default", "Profile selection survives malformed state file")
 assert_equal(
   spring.env(fixture .. "/maven").SPRING_PROFILES_ACTIVE,
   "from-dotenv",

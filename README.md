@@ -68,10 +68,12 @@ Java mappings are buffer-local and appear after JDTLS attaches.
 | --- | --- |
 | `jj` (insert mode) | Return to normal mode |
 | `<leader>rr` | Choose a project or current-file Overseer task |
+| `<leader>js` | Inspect the detected Java/Spring project (root, build system, profile, env source) |
 | `<leader>jp` | Select and persist a Spring profile |
 | `<leader>jr` | Run the Spring Boot application |
 | `<leader>jd` | Select and debug a Java main class |
 | `<leader>ja` | Attach the debugger to a remote JVM |
+| `<leader>ji` | Inspect the Java project (same as `<leader>js`) |
 | `<leader>tt` | Run the current Java test class |
 | `<leader>tr` | Run the nearest Java test method |
 | `<leader>tT` | Pick a Java test to run |

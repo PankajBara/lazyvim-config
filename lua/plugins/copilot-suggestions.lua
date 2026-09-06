@@ -45,6 +45,8 @@ return {
           async = true,
         }
       )
+
+      return opts
     end,
   },
 }

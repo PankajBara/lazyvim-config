@@ -25,7 +25,7 @@ return {
         ghost_text = { enabled = true },
       },
       sources = {
-        default = { "copilot" },
+        default = vim.list_extend(opts.sources and opts.sources.default or {}, { "copilot" }),
         providers = {
           copilot = {
             name = "Copilot",

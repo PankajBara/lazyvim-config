@@ -1,6 +1,10 @@
 -- Options are automatically loaded before lazy.nvim startup.
 require("config.remote_clipboard").setup()
 
+-- Baseline: yanks/pastes reach the host/Wayland clipboard. Remote sessions
+-- override vim.g.clipboard (OSC 52 / wl-clipboard) via remote_clipboard.lua.
+vim.opt.clipboard = "unnamedplus"
+
 local launch_dir = vim.uv.cwd()
 local home_dir = vim.uv.fs_realpath(vim.fn.expand("~"))
 local root = require("workstation.root")

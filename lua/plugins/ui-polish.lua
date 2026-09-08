@@ -35,7 +35,12 @@ return {
         { "mode", separator = { left = "", right = "" }, padding = { left = 1, right = 1 } },
       }
       opts.sections.lualine_z = {
-        { function() return "󰥔 " .. os.date("%R") end, padding = { left = 1, right = 1 } },
+        {
+          function()
+            return "󰥔 " .. os.date("%R")
+          end,
+          padding = { left = 1, right = 1 },
+        },
       }
       return opts
     end,
@@ -72,19 +77,25 @@ return {
 
       vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter" }, {
         group = group,
-        callback = function(args) set_active_cursorline(args.win) end,
+        callback = function(args)
+          set_active_cursorline(args.win)
+        end,
       })
       vim.api.nvim_create_autocmd("WinLeave", {
         group = group,
         callback = function(args)
-          if vim.api.nvim_win_is_valid(args.win) then vim.wo[args.win].cursorline = false end
+          if vim.api.nvim_win_is_valid(args.win) then
+            vim.wo[args.win].cursorline = false
+          end
         end,
       })
 
       local function polish_highlights()
         local function get(group_name, key)
           local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = group_name, link = false })
-          if not ok then return nil end
+          if not ok then
+            return nil
+          end
           return hl[key]
         end
         local function hex(value)

@@ -78,14 +78,15 @@ return {
       vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter" }, {
         group = group,
         callback = function(args)
-          set_active_cursorline(args.win)
+          set_active_cursorline(args.win or vim.api.nvim_get_current_win())
         end,
       })
       vim.api.nvim_create_autocmd("WinLeave", {
         group = group,
         callback = function(args)
-          if vim.api.nvim_win_is_valid(args.win) then
-            vim.wo[args.win].cursorline = false
+          local win = args.win or vim.api.nvim_get_current_win()
+          if vim.api.nvim_win_is_valid(win) then
+            vim.wo[win].cursorline = false
           end
         end,
       })

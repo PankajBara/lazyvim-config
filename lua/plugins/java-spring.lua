@@ -269,11 +269,9 @@ return {
   {
     "folke/sidekick.nvim",
     opts = function(_, opts)
-      opts.cli = opts.cli or {}
-      opts.cli.tools = opts.cli.tools or {}
-      opts.cli.tools.codex = { cmd = "codex", name = "Codex" }
-      opts.cli.tools.claude = { cmd = "claude", name = "Claude" }
-      opts.cli.tools.copilot = { cmd = "copilot", name = "Copilot" }
+      -- Codex, Claude, and Copilot are already registered as Sidekick CLI tools
+      -- by default; do not override them, since the default `cmd` is a list and
+      -- Sidekick calls `tool.cmd[1]` (a string `cmd` raises E1174 at runtime).
       return opts
     end,
     keys = {

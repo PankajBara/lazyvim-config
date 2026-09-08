@@ -63,7 +63,7 @@ These build on LazyVim's Snacks and Treesitter stack and are safe under Omarchy'
 
 - **Sticky context** (`nvim-treesitter/nvim-treesitter-context`, enabled via the `ui.treesitter-context` extra): the enclosing function or class header stays pinned to the top of the viewport while scrolling. Toggle with `<leader>ut`.
 - **Indent guides and scope** (`lua/plugins/snacks-ui.lua`): Snacks indent guides with a subtle draw-in animation, plus the animated scope indicator for the current code block. Scope is excluded from non-code UIs such as the dashboard, lazy, mason, neo-tree, and help.
-- **Dashboard** (`lua/plugins/snacks-dashboard.lua`): a theme-aware startup screen with the active colorscheme, quick keys (`<leader>e`, `<leader>ff`, `<leader>gg`, `<leader>rr`, and more), recent projects, and recent files.
+- **Dashboard** (`lua/plugins/snacks-dashboard.lua`): a startup screen with a centered header, quick keys (`<leader>e`, `<leader>ff`, `<leader>fg`, `<leader>gg`, `<leader>rr`, `<leader>l`, and quit), recent projects, and recent files.
 - **Rainbow delimiters** (`HiPhish/rainbow-delimiters.nvim`): nested brackets and parentheses are color-coded. Its highlight groups are registered as transparent in `plugin/after/transparency.lua`.
 - **Extra parsers** (`lua/plugins/treesitter.lua`): `bash`, `dockerfile`, `jsonc`, `lua`, `markdown`, `markdown_inline`, `toml`, and `yaml` are ensured through Mason/Treesitter for richer highlighting. HTML/JSX auto-closing tags are already provided by `nvim-ts-autotag`.
 

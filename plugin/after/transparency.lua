@@ -52,6 +52,13 @@ local groups = {
   "NotifyWARNBorder",
   "NotifyTRACEBorder",
   "NotifyDEBUGBorder",
+  -- rainbow-delimiters
+  "RainbowDelimiter1",
+  "RainbowDelimiter2",
+  "RainbowDelimiter3",
+  "RainbowDelimiter4",
+  "RainbowDelimiter5",
+  "RainbowDelimiter6",
 }
 
 for _, name in ipairs(groups) do

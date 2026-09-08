@@ -58,7 +58,11 @@ return {
     config = function(_, opts)
       -- This config function replaces LazyVim's default Snacks callback, so
       -- keep the actual plugin setup here before registering UI refinements.
+      local notify = vim.notify
       require("snacks").setup(opts)
+      if LazyVim.has("noice.nvim") then
+        vim.notify = notify
+      end
 
       local group = vim.api.nvim_create_augroup("WorkstationUiPolish", { clear = true })
 

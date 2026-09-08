@@ -67,8 +67,7 @@ return {
           return false
         end
 
-        return vim.api.nvim_buf_line_count(buf) == 1
-          and (vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] or "") == ""
+        return vim.api.nvim_buf_line_count(buf) == 1 and (vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] or "") == ""
       end
 
       local function open_dashboard()

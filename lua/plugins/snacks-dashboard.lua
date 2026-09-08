@@ -18,19 +18,19 @@ return {
 ╰──────────────────────────────────────────────╯]],
         },
         sections = {
-          { section = "header", padding = { bottom = 2, top = 1 } },
-          { section = "keys", gap = 1, padding = { bottom = 2 } },
+          { section = "header", padding = { 1, 2 } },
+          { section = "keys", gap = 1, padding = { 0, 2 } },
           {
             section = "projects",
             title = " Projects",
             icon = "󰉗 ",
             indent = 2,
-            padding = { bottom = 1 },
+            padding = { 0, 1 },
             filter = function(dir)
               return dir:match("/%.git$") == nil
             end,
           },
-          { section = "recent_files", title = " Recent Files", icon = "󰈔 ", indent = 2, padding = { bottom = 2 } },
+          { section = "recent_files", title = " Recent Files", icon = "󰈔 ", indent = 2, padding = { 0, 2 } },
           { section = "startup", icon = "󰄉 " },
         },
         keys = {

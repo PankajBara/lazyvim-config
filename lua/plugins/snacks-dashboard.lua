@@ -21,7 +21,14 @@ return {
         sections = {
           { section = "header" },
           { section = "keys", gap = 1, padding = 1 },
-          { section = "projects", title = "Projects", icon = "󰉗 ", filter = function(dir) return dir:match("/%.git$") == nil end },
+          {
+            section = "projects",
+            title = "Projects",
+            icon = "󰉗 ",
+            filter = function(dir)
+              return dir:match("/%.git$") == nil
+            end,
+          },
           { section = "recent_files", title = "Recent Files", icon = "󰈔 " },
         },
         keys = {

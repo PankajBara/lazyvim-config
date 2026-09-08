@@ -55,7 +55,11 @@ return {
       opts.input = vim.tbl_deep_extend("force", opts.input or {}, { icon = "󰘵 " })
       return opts
     end,
-    config = function()
+    config = function(_, opts)
+      -- This config function replaces LazyVim's default Snacks callback, so
+      -- keep the actual plugin setup here before registering UI refinements.
+      require("snacks").setup(opts)
+
       local group = vim.api.nvim_create_augroup("WorkstationUiPolish", { clear = true })
 
       local function set_active_cursorline(win)

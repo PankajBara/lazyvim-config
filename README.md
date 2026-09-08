@@ -53,8 +53,21 @@ Missing baseline requirements and unwritable required paths are errors. Missing 
 - Kulala REST requests, Overseer tasks, Neo-tree, Snacks search, Trouble, and Git signs
 - Copilot language-server suggestions, CodeCompanion in-editor chat/inline edits (via the Copilot CLI), and Sidekick sessions for installed Codex, Claude, or Copilot CLIs
 - Multiple colorschemes, transparent highlights, optional Omarchy theme reload, and optional OSC 52/tmux/Wayland clipboard handling
+- Treesitter-based UI: sticky code context headers, Snacks indent guides and animated scope, rainbow delimiters, and extra language parsers
 
 Configured extras are recorded in [`lazyvim.json`](lazyvim.json); plugin versions are pinned in [`lazy-lock.json`](lazy-lock.json).
+
+## UI enhancements
+
+These build on LazyVim's Snacks and Treesitter stack and are safe under Omarchy's theme hot-reload and the intentionally disabled scroll animation.
+
+- **Sticky context** (`nvim-treesitter/nvim-treesitter-context`, enabled via the `ui.treesitter-context` extra): the enclosing function or class header stays pinned to the top of the viewport while scrolling. Toggle with `<leader>ut`.
+- **Indent guides and scope** (`lua/plugins/snacks-ui.lua`): Snacks indent guides with a subtle draw-in animation, plus the animated scope indicator for the current code block. Scope is excluded from non-code UIs such as the dashboard, lazy, mason, neo-tree, and help.
+- **Dashboard** (`lua/plugins/snacks-dashboard.lua`): a theme-aware startup screen with the active colorscheme, quick keys (`<leader>e`, `<leader>ff`, `<leader>gg`, `<leader>rr`, and more), recent projects, and recent files.
+- **Rainbow delimiters** (`HiPhish/rainbow-delimiters.nvim`): nested brackets and parentheses are color-coded. Its highlight groups are registered as transparent in `plugin/after/transparency.lua`.
+- **Extra parsers** (`lua/plugins/treesitter.lua`): `bash`, `dockerfile`, `jsonc`, `lua`, `markdown`, `markdown_inline`, `toml`, and `yaml` are ensured through Mason/Treesitter for richer highlighting. HTML/JSX auto-closing tags are already provided by `nvim-ts-autotag`.
+
+After pulling these changes, run `:Lazy` and press `S` to sync; the two new plugins (`nvim-treesitter-context` and `rainbow-delimiters.nvim`) require a network fetch on first install.
 
 ## Keymaps
 

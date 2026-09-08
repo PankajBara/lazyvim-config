@@ -23,8 +23,7 @@ return {
           { section = "header" },
           { section = "keys", gap = 1, padding = 1 },
           { section = "projects", title = "Projects", icon = "󰉗 ", filter = function(dir) return dir:match("/%.git$") == nil end },
-          { section = "files", title = "Recent Files", icon = "󰈔 " },
-          { section = "footer" },
+          { section = "recent_files", title = "Recent Files", icon = "󰈔 " },
         },
         keys = {
           { icon = "󰉖 ", key = "<leader>e", desc = "Explorer", action = ":Neotree focus<cr>" },

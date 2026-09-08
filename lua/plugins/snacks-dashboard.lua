@@ -17,7 +17,6 @@ return {
       opts.dashboard = vim.tbl_deep_extend("force", opts.dashboard or {}, {
         preset = {
           header = "Neovim",
-          footer = { "colorscheme: " .. colorscheme, align = "center" },
         },
         sections = {
           { section = "header" },

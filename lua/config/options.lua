@@ -30,6 +30,7 @@ vim.opt.signcolumn = "yes"
 vim.opt.pumheight = 12
 vim.opt.showmode = false
 vim.opt.cmdheight = 0
+vim.opt.winborder = "rounded"
 vim.opt.fillchars = {
   eob = " ",
   foldopen = "",

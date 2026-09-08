@@ -1,0 +1,112 @@
+-- Small, theme-aware visual refinements.  These intentionally use existing
+-- highlight groups so Omarchy can continue to hot-reload the active theme.
+return {
+  {
+    "akinsho/bufferline.nvim",
+    opts = function(_, opts)
+      opts.options = vim.tbl_deep_extend("force", opts.options or {}, {
+        mode = "buffers",
+        separator_style = "thin",
+        always_show_bufferline = false,
+        show_buffer_close_icons = false,
+        show_close_icon = false,
+        color_icons = true,
+        tab_size = 18,
+        max_name_length = 26,
+        max_prefix_length = 18,
+        truncate_names = true,
+        indicator = { style = "underline" },
+      })
+      return opts
+    end,
+  },
+  {
+    "nvim-lualine/lualine.nvim",
+    opts = function(_, opts)
+      opts.options = vim.tbl_deep_extend("force", opts.options or {}, {
+        component_separators = { left = "", right = "" },
+        section_separators = { left = "", right = "" },
+        globalstatus = true,
+        always_divide_middle = false,
+        icons_enabled = true,
+      })
+      opts.sections = opts.sections or {}
+      opts.sections.lualine_a = {
+        { "mode", separator = { left = "", right = "" }, padding = { left = 1, right = 1 } },
+      }
+      opts.sections.lualine_z = {
+        { function() return "󰥔 " .. os.date("%R") end, padding = { left = 1, right = 1 } },
+      }
+      return opts
+    end,
+  },
+  {
+    "folke/snacks.nvim",
+    opts = function(_, opts)
+      opts.notifier = vim.tbl_deep_extend("force", opts.notifier or {}, {
+        style = "compact",
+        timeout = 3000,
+      })
+      opts.input = vim.tbl_deep_extend("force", opts.input or {}, { icon = "󰘵 " })
+      return opts
+    end,
+    config = function()
+      local group = vim.api.nvim_create_augroup("WorkstationUiPolish", { clear = true })
+
+      local function set_active_cursorline(win)
+        if not vim.api.nvim_win_is_valid(win) then
+          return
+        end
+        local bufnr = vim.api.nvim_win_get_buf(win)
+        local ft = vim.bo[bufnr].filetype
+        local quiet = {
+          help = true,
+          lazy = true,
+          mason = true,
+          neo_tree = true,
+          snacks_dashboard = true,
+          qf = true,
+        }
+        vim.wo[win].cursorline = not quiet[ft]
+      end
+
+      vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter" }, {
+        group = group,
+        callback = function(args) set_active_cursorline(args.win) end,
+      })
+      vim.api.nvim_create_autocmd("WinLeave", {
+        group = group,
+        callback = function(args)
+          if vim.api.nvim_win_is_valid(args.win) then vim.wo[args.win].cursorline = false end
+        end,
+      })
+
+      local function polish_highlights()
+        local function get(group_name, key)
+          local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = group_name, link = false })
+          if not ok then return nil end
+          return hl[key]
+        end
+        local function hex(value)
+          return value and string.format("#%06x", value) or nil
+        end
+        local accent = hex(get("Identifier", "fg")) or hex(get("Special", "fg"))
+        local muted = hex(get("Comment", "fg"))
+        if accent then
+          vim.api.nvim_set_hl(0, "CursorLineNr", { fg = accent, bold = true })
+          vim.api.nvim_set_hl(0, "WinSeparator", { fg = accent })
+          vim.api.nvim_set_hl(0, "FloatBorder", { fg = accent })
+          vim.api.nvim_set_hl(0, "MatchParen", { fg = accent, bold = true, underline = true })
+        end
+        if muted then
+          vim.api.nvim_set_hl(0, "LineNr", { fg = muted })
+          vim.api.nvim_set_hl(0, "Folded", { fg = muted, italic = true })
+          vim.api.nvim_set_hl(0, "StatusLineNC", { fg = muted })
+        end
+      end
+
+      vim.api.nvim_create_autocmd("ColorScheme", { group = group, callback = polish_highlights })
+      polish_highlights()
+    end,
+  },
+}

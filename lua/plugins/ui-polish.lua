@@ -121,6 +121,7 @@ return {
           vim.api.nvim_set_hl(0, "LineNr", { fg = muted })
           vim.api.nvim_set_hl(0, "Folded", { fg = muted, italic = true })
           vim.api.nvim_set_hl(0, "StatusLineNC", { fg = muted })
+          vim.api.nvim_set_hl(0, "WinSeparator", { fg = muted })
         end
       end
 

@@ -114,7 +114,6 @@ return {
         local muted = hex(get("Comment", "fg"))
         if accent then
           vim.api.nvim_set_hl(0, "CursorLineNr", { fg = accent, bold = true })
-          vim.api.nvim_set_hl(0, "WinSeparator", { fg = accent })
           vim.api.nvim_set_hl(0, "FloatBorder", { fg = accent })
           vim.api.nvim_set_hl(0, "MatchParen", { fg = accent, bold = true, underline = true })
         end

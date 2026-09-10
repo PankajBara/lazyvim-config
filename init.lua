@@ -4,6 +4,9 @@ require("config.lazy")
 -- DSA C++ helpers (boilerplate on new .cpp files, build/run keymaps)
 require("config.dsa")
 
+-- DSA C++ snippets (registered after LazyVim starts)
+require("snippets.cpp")
+
 -- Cursive italics for code comments (needs a coding font with cursive italics)
 vim.api.nvim_create_autocmd("User", {
   pattern = "LazyVimStarted",

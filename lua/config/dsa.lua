@@ -29,3 +29,5 @@ vim.keymap.set("n", "<leader>rb", run_cpp_task("C++: Build Current File"),
   { desc = "DSA: Build current C++ file" })
 vim.keymap.set("n", "<leader>rc", run_cpp_task("C++: Build and Run Current File"),
   { desc = "DSA: Build and run current C++ file" })
+vim.keymap.set("n", "<leader>rt", run_cpp_task("C++: Build and Run with in.txt"),
+  { desc = "DSA: Build and run with in.txt" })

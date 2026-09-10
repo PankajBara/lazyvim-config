@@ -56,9 +56,14 @@ return {
       }
     end
 
+    local run_with_input =
+      compile .. ' && if [ -f "$4" ]; then "$3" < "$4"; else echo "no in.txt in $(dirname "$4")"; "$3"; fi'
+    local input_file = vim.fs.joinpath(cwd, "in.txt")
+
     cb({
       task("C++: Build Current File", compile),
       task("C++: Build and Run Current File", compile .. ' && "$3"'),
+      task("C++: Build and Run with in.txt", run_with_input, input_file),
     })
   end,
 }

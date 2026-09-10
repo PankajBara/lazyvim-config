@@ -5,8 +5,9 @@ return {
     -- Modern buffer/tab bar at the top, themed to match Solarized Osaka.
     "akinsho/bufferline.nvim",
     event = "VeryLazy",
-    opts = {
-      options = {
+    opts = function(_, opts)
+      opts = opts or {}
+      opts.options = vim.tbl_deep_extend("force", opts.options or {}, {
         mode = "buffers",
         numbers = "none",
         close_command = "bdelete! %d",
@@ -33,27 +34,40 @@ return {
           end
           return table.concat(result, " ")
         end,
-      },
-      -- Solarized Osaka palette; the editor stays transparent while the
-      -- bufferline keeps solid, readable colors.
-      highlights = {
-        fill = { fg = { from = "tabline_fg" }, bg = { from = "tabline_bg" } },
-        background = { fg = { from = "comment" }, bg = { from = "tabline_bg" } },
-        buffer_selected = {
-          fg = { from = "normal_fg" },
-          bg = { from = "tabline_sel_bg" },
-          bold = true,
-          italic = true,
-        },
-        separator_selected = { fg = { from = "tabline_sel_bg" }, bg = { from = "tabline_bg" } },
-        separator_visible = { fg = { from = "tabline_bg" }, bg = { from = "tabline_bg" } },
-        close_button = { fg = { from = "comment" }, bg = { from = "tabline_bg" } },
-        close_button_visible = { fg = { from = "comment" }, bg = { from = "tabline_bg" } },
-        close_button_selected = { fg = { from = "normal_fg" }, bg = { from = "tabline_sel_bg" } },
-        indicator_selected = { fg = { from = "tabline_sel_bg" }, bg = { from = "tabline_sel_bg" } },
-        pick_selected = { fg = { from = "tabline_sel_bg" }, bg = { from = "tabline_fg" } },
-      },
-    },
+      })
+
+      -- Pull the active Solarized Osaka palette so colors stay correct when
+      -- Omarchy hot-reloads the theme. The editor stays transparent (handled by
+      -- plugin/after/transparency.lua) while the bufferline keeps solid,
+      -- readable Solarized Osaka colors.
+      local ok, colors = pcall(require, "solarized-osaka.colors")
+      local c = ok and colors.default
+      if c then
+        opts.highlights = {
+          fill = { fg = c.base0, bg = c.base03 },
+          background = { fg = c.base00, bg = c.base03 },
+          buffer_selected = { fg = c.base3, bg = c.base02, bold = true, italic = true },
+          buffer_visible = { fg = c.base0, bg = c.base03 },
+          separator_selected = { fg = c.base02, bg = c.base03 },
+          separator_visible = { fg = c.base03, bg = c.base03 },
+          separator = { fg = c.base03, bg = c.base03 },
+          close_button = { fg = c.base00, bg = c.base03 },
+          close_button_visible = { fg = c.base00, bg = c.base03 },
+          close_button_selected = { fg = c.base3, bg = c.base02 },
+          indicator_selected = { fg = c.blue, bg = c.blue },
+          pick_selected = { fg = c.base02, bg = c.blue },
+          error = { fg = c.red, bg = c.base03 },
+          error_diagnostic = { fg = c.red, bg = c.base03 },
+          warning = { fg = c.yellow, bg = c.base03 },
+          warning_diagnostic = { fg = c.yellow, bg = c.base03 },
+          info = { fg = c.blue, bg = c.base03 },
+          info_diagnostic = { fg = c.blue, bg = c.base03 },
+          hint = { fg = c.base1, bg = c.base03 },
+          hint_diagnostic = { fg = c.base1, bg = c.base03 },
+        }
+      end
+      return opts
+    end,
   },
   {
     "nvim-lualine/lualine.nvim",

@@ -8,7 +8,7 @@ return {
     opts = function(_, opts)
       opts.indent = vim.tbl_deep_extend("force", opts.indent or {}, {
         enabled = true,
-        animate = { enabled = true },
+        animate = { enabled = false },
         char = "│",
         blank = " ",
       })

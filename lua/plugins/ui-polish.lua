@@ -96,12 +96,10 @@ return {
         local function hex(value)
           return value and string.format("#%06x", value) or nil
         end
-        -- Prefer the pastel accent from the aether palette, falling back to
-        -- syntax groups so this stays correct across Omarchy hot-reloads.
-        local accent = hex(get("AetherAccent", "fg"))
-          or hex(get("Identifier", "fg"))
-          or hex(get("Special", "fg"))
-        local muted = hex(get("AetherMuted", "fg")) or hex(get("Comment", "fg"))
+        -- Derive accent/muted from syntax groups so this stays correct
+        -- across Omarchy hot-reloads (the pastel palette flows through here).
+        local accent = hex(get("Identifier", "fg")) or hex(get("Special", "fg"))
+        local muted = hex(get("Comment", "fg"))
         if accent then
           vim.api.nvim_set_hl(0, "CursorLineNr", { fg = accent, bold = true })
           vim.api.nvim_set_hl(0, "FloatBorder", { fg = accent })

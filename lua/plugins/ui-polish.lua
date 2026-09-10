@@ -2,46 +2,32 @@
 -- highlight groups so Omarchy can continue to hot-reload the active theme.
 return {
   {
+    -- Minimal chrome: no top buffer/tab bar.
     "akinsho/bufferline.nvim",
-    opts = function(_, opts)
-      opts.options = vim.tbl_deep_extend("force", opts.options or {}, {
-        mode = "buffers",
-        separator_style = "thin",
-        always_show_bufferline = false,
-        show_buffer_close_icons = false,
-        show_close_icon = false,
-        color_icons = true,
-        tab_size = 18,
-        max_name_length = 26,
-        max_prefix_length = 18,
-        truncate_names = true,
-        indicator = { style = "underline" },
-      })
-      return opts
-    end,
+    enabled = false,
   },
   {
     "nvim-lualine/lualine.nvim",
     opts = function(_, opts)
+      -- Flat, near-empty statusline: no separators, no icons, filename only.
       opts.options = vim.tbl_deep_extend("force", opts.options or {}, {
-        component_separators = { left = "", right = "" },
-        section_separators = { left = "", right = "" },
+        component_separators = { left = "", right = "" },
+        section_separators = { left = "", right = "" },
         globalstatus = true,
         always_divide_middle = false,
-        icons_enabled = true,
+        icons_enabled = false,
       })
       opts.sections = opts.sections or {}
       opts.sections.lualine_a = {
-        { "mode", separator = { left = "", right = "" }, padding = { left = 1, right = 1 } },
+        { "mode", padding = { left = 1, right = 0 } },
       }
-      opts.sections.lualine_z = {
-        {
-          function()
-            return "󰥔 " .. os.date("%R")
-          end,
-          padding = { left = 1, right = 1 },
-        },
+      opts.sections.lualine_b = {
+        { "filename", path = 1, symbols = { modified = "●", readonly = "󰌾", unnamed = "" } },
       }
+      opts.sections.lualine_c = {}
+      opts.sections.lualine_x = {}
+      opts.sections.lualine_y = {}
+      opts.sections.lualine_z = {}
       return opts
     end,
   },

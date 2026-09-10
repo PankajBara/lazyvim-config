@@ -96,19 +96,25 @@ return {
         local function hex(value)
           return value and string.format("#%06x", value) or nil
         end
-        local accent = hex(get("Identifier", "fg")) or hex(get("Special", "fg"))
-        local muted = hex(get("Comment", "fg"))
+        -- Prefer the pastel accent from the aether palette, falling back to
+        -- syntax groups so this stays correct across Omarchy hot-reloads.
+        local accent = hex(get("AetherAccent", "fg"))
+          or hex(get("Identifier", "fg"))
+          or hex(get("Special", "fg"))
+        local muted = hex(get("AetherMuted", "fg")) or hex(get("Comment", "fg"))
         if accent then
           vim.api.nvim_set_hl(0, "CursorLineNr", { fg = accent, bold = true })
           vim.api.nvim_set_hl(0, "FloatBorder", { fg = accent })
           vim.api.nvim_set_hl(0, "MatchParen", { fg = accent, bold = true, underline = true })
+          vim.api.nvim_set_hl(0, "WinSeparator", { fg = accent, nocombine = true })
         end
         if muted then
           vim.api.nvim_set_hl(0, "LineNr", { fg = muted })
           vim.api.nvim_set_hl(0, "Folded", { fg = muted, italic = true })
           vim.api.nvim_set_hl(0, "StatusLineNC", { fg = muted })
-          vim.api.nvim_set_hl(0, "WinSeparator", { fg = "NONE" })
         end
+        -- Keep a near-invisible separator for the trimmed statusline.
+        vim.api.nvim_set_hl(0, "StatusLine", { fg = "NONE", bg = "NONE" })
       end
 
       vim.api.nvim_create_autocmd("ColorScheme", { group = group, callback = polish_highlights })

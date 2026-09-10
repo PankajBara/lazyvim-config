@@ -14,6 +14,7 @@ return {
         "markdown_inline",
         "toml",
         "yaml",
+        "cpp",
       })
       return opts
     end,

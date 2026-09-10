@@ -42,13 +42,17 @@ return {
       vim.fs.joinpath(output_dir, vim.fn.fnamemodify(source, ":t:r") .. "-" .. vim.fn.sha256(source):sub(1, 16))
     local compile = 'mkdir -p "$1" && g++ -std=c++20 -Wall -Wextra -Wpedantic -g "$2" -o "$3"'
 
-    local function task(name, command)
+    local function task(name, command, extra_arg)
       return {
         name = name,
         builder = function()
+          local args = { "-c", command, "overseer-cpp", output_dir, source, executable }
+          if extra_arg then
+            table.insert(args, extra_arg)
+          end
           return {
             cmd = "sh",
-            args = { "-c", command, "overseer-cpp", output_dir, source, executable },
+            args = args,
             cwd = cwd,
             components = components(),
           }

@@ -10,6 +10,7 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim",
       "MunifTanjim/nui.nvim",
+      "3rd/image.nvim",
     },
     lazy = "leetcode.nvim" ~= vim.fn.argv(0, -1),
     opts = {
@@ -18,6 +19,20 @@ return {
       plugins = {
         non_standalone = true,
       },
+      injector = {
+        cpp = {
+          imports = function()
+            return { "#include <bits/stdc++.h>", "using namespace std;" }
+          end,
+          after = "int main() {}",
+        },
+        java = {
+          imports = function()
+            return { "import java.util.*;", "import java.util.stream.*;" }
+          end,
+        },
+      },
+      image_support = true,
     },
     keys = {
       {

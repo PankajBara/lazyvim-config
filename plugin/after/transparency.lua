@@ -98,3 +98,8 @@ local groups = {
 for _, name in ipairs(groups) do
   make_transparent(name)
 end
+
+-- Dim the wallpaper so it reads as a subtle background texture. Must run after
+-- the transparent groups above (and after the colorscheme is applied) so the
+-- derived shade is correct.
+dim_background()

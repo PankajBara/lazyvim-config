@@ -15,6 +15,7 @@ return {
         "toml",
         "yaml",
         "cpp",
+        "html",
       })
       return opts
     end,

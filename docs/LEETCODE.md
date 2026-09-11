@@ -105,7 +105,7 @@ Edit `lua/plugins/leetcode.lua` → `opts`. Common knobs:
 ```lua
 opts = {
   lang = "cpp",                       -- default language
-  picker = { provider = "snacks" },  -- snacks / fzf / telescope / mini
+  picker = { provider = "snacks-picker" },  -- snacks-picker / fzf-lua / telescope / mini-picker
   plugins = { non_standalone = true },
   injector = {                       -- inject code that isn't submitted
     cpp = { after = "int main() {}" },

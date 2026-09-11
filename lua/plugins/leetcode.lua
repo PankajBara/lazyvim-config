@@ -10,7 +10,17 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim",
       "MunifTanjim/nui.nvim",
-      "3rd/image.nvim",
+      {
+        "3rd/image.nvim",
+        opts = {
+          backend = "kitty",
+          integrations = {
+            markdown = { enabled = false },
+            neorg = { enabled = false },
+            telescope = { enabled = false },
+          },
+        },
+      },
     },
     lazy = "leetcode.nvim" ~= vim.fn.argv(0, -1),
     opts = {

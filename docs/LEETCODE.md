@@ -103,13 +103,24 @@ access (common during contests) — wait, and disable any VPN.
 Edit `lua/plugins/leetcode.lua` → `opts`. Common knobs:
 
 ```lua
-opts = {
+  opts = {
   lang = "cpp",                       -- default language
   picker = { provider = "snacks-picker" },  -- snacks-picker / fzf-lua / telescope / mini-picker
   plugins = { non_standalone = true },
   injector = {                       -- inject code that isn't submitted
-    cpp = { after = "int main() {}" },
+    cpp = {
+      imports = function()
+        return { "#include <bits/stdc++.h>", "using namespace std;" }
+      end,
+      after = "int main() {}",
+    },
+    java = {
+      imports = function()
+        return { "import java.util.*;", "import java.util.stream.*;" }
+      end,
+    },
   },
+  image_support = true,              -- render problem diagrams (needs image.nvim)
 }
 ```
 

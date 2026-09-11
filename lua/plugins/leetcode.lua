@@ -12,8 +12,11 @@ return {
       "MunifTanjim/nui.nvim",
       {
         "3rd/image.nvim",
+        config = function(_, opts)
+          require("image").setup(opts)
+        end,
         opts = {
-          backend = "kitty",
+          backend = "sixel",
           integrations = {
             markdown = { enabled = false },
             neorg = { enabled = false },

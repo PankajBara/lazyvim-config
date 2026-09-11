@@ -14,7 +14,7 @@ return {
     lazy = "leetcode.nvim" ~= vim.fn.argv(0, -1),
     opts = {
       lang = "cpp",
-      picker = { provider = "snacks" },
+      picker = { provider = "snacks-picker" },
       plugins = {
         non_standalone = true,
       },

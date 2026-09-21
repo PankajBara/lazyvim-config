@@ -122,9 +122,12 @@ Then open `~/dsa/arrays/p1.cpp` and press `<leader>rc`.
 
 - **Compiler flags:** edit `CompileFlags.Add` in `~/dsa/.clangd` and the
   `compile` line in `lua/overseer/template/user/cpp_build.lua` if they should differ.
-- **Boilerplate:** edit `~/dsa/template.cpp` (new files copy from it at creation).
-- **Format style:** edit `~/dsa/.clang-format`.
-- **Snippets:** add entries in `lua/snippets/cpp.lua` (native `vim.snippets.add`).
+- **Boilerplate:** edit snippets in `snippets/cpp.json` (e.g. `main`, `fastio`,
+  `fori`, `vpai`). The previous `~/dsa/template.cpp` BufNewFile seed was removed
+  because the path did not exist on this machine; snippets are the supported
+  boilerplate source.
+- **Format style:** edit `~/dsa/.clang-format` (if present).
+- **Snippets:** add entries in `snippets/cpp.json` (consumed by blink.cmp).
 - **clang-tidy strictness:** edit `Diagnostics.ClangTidy.Checks` in `.clangd`.
 
 ## 7. Known limitations (by design)

@@ -33,3 +33,7 @@ temp/
 .local/
 doc/tags
 .tests
+
+# Prior-session transcripts and stray session-style markdown byproducts
+# (e.g. session-ses_*.md dropped in the config root).
+session-*.md

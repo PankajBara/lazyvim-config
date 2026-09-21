@@ -14,10 +14,6 @@ end
 local function dim_background()
   local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = "WinSeparator", link = false })
   local shade = ok and hl.fg or nil
-  -- Fall back to a dark Solarized Osaka base if the shade can't be derived.
-  if not shade then
-    shade = 14140232 -- #d80000 is wrong; real fallback handled below
-  end
   -- Derive a dark translucent-ish shade: use the theme's base03 if available.
   local okc, colors = pcall(require, "solarized-osaka.colors")
   local base = okc and colors.default and colors.default.base03

@@ -2,7 +2,8 @@
 -- highlight groups so Omarchy can continue to hot-reload the active theme.
 return {
   {
-    -- Modern buffer/tab bar at the top, themed to match Solarized Osaka.
+    -- Modern buffer/tab bar at the top. Colors come from the active Omarchy
+    -- colorscheme (theme.lua symlink); no hardcoded palette.
     "akinsho/bufferline.nvim",
     event = "VeryLazy",
     opts = function(_, opts)
@@ -35,46 +36,16 @@ return {
           return table.concat(result, " ")
         end,
       })
-
-      -- Pull the active Solarized Osaka palette so colors stay correct when
-      -- Omarchy hot-reloads the theme. The editor stays transparent (handled by
-      -- plugin/after/transparency.lua) while the bufferline keeps solid,
-      -- readable Solarized Osaka colors.
-      local ok, colors = pcall(require, "solarized-osaka.colors")
-      local c = ok and colors.default
-      if c then
-        opts.highlights = {
-          fill = { fg = c.base0, bg = c.base03 },
-          background = { fg = c.base00, bg = c.base03 },
-          buffer_selected = { fg = c.base3, bg = c.base02, bold = true, italic = true },
-          buffer_visible = { fg = c.base0, bg = c.base03 },
-          separator_selected = { fg = c.base02, bg = c.base03 },
-          separator_visible = { fg = c.base03, bg = c.base03 },
-          separator = { fg = c.base03, bg = c.base03 },
-          close_button = { fg = c.base00, bg = c.base03 },
-          close_button_visible = { fg = c.base00, bg = c.base03 },
-          close_button_selected = { fg = c.base3, bg = c.base02 },
-          indicator_selected = { fg = c.blue, bg = c.blue },
-          pick_selected = { fg = c.base02, bg = c.blue },
-          error = { fg = c.red, bg = c.base03 },
-          error_diagnostic = { fg = c.red, bg = c.base03 },
-          warning = { fg = c.yellow, bg = c.base03 },
-          warning_diagnostic = { fg = c.yellow, bg = c.base03 },
-          info = { fg = c.blue, bg = c.base03 },
-          info_diagnostic = { fg = c.blue, bg = c.base03 },
-          hint = { fg = c.base1, bg = c.base03 },
-          hint_diagnostic = { fg = c.base1, bg = c.base03 },
-        }
-      end
       return opts
     end,
   },
   {
     "nvim-lualine/lualine.nvim",
     opts = function(_, opts)
-      -- Polished Solarized Osaka powerline statusline.
+      -- Follow the active Omarchy colorscheme. `auto` uses a matching lualine
+      -- theme when one exists, otherwise derives colors from highlight groups.
       opts.options = vim.tbl_deep_extend("force", opts.options or {}, {
-        theme = "solarized-osaka",
+        theme = "auto",
         component_separators = { left = "", right = "" },
         section_separators = { left = "", right = "" },
         globalstatus = true,

@@ -295,7 +295,6 @@ return {
         cond = function()
           return spring.statusline() ~= ""
         end,
-        color = { fg = "#7daea3" },
       }
       opts.sections = opts.sections or {}
       opts.sections.lualine_x = opts.sections.lualine_x or {}

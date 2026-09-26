@@ -4,10 +4,7 @@ local fixture = vim.fn.tempname()
 vim.fn.mkdir(fixture .. "/config/lua/plugins", "p")
 vim.fn.writefile({ "return {}" }, fixture .. "/config/lua/plugins/theme.lua")
 
-local function find(results, text)
-  for _, result in ipairs(results) do
-    if result.message:find(text, 1, true) then
-      return result.level
+local function find(results, text) for _, result in ipairs(results) do if result.message:find(text, 1, true) then return result.level
     end
   end
 end

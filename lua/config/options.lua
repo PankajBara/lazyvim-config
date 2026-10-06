@@ -43,3 +43,10 @@ vim.opt.listchars = {
   trail = "·",
   nbsp = "␣",
 }
+
+-- Persistent undo history. One file per buffer under stdpath("data")/undo so
+-- project directories stay clean and a single .gitignore keeps working.
+local undodir = vim.fn.stdpath("data") .. "/undo"
+vim.fn.mkdir(undodir, "p")
+vim.opt.undofile = true
+vim.opt.undodir = undodir

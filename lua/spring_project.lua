@@ -1,6 +1,19 @@
 local M = {}
 
 local markers = { "pom.xml", "mvnw", "build.gradle", "build.gradle.kts", "gradlew" }
+local profiles_cache = {}
+
+local function normalized_root(root)
+  return root and vim.fs.normalize(root) or nil
+end
+
+function M.clear_profile_cache(root)
+  if root then
+    profiles_cache[normalized_root(root)] = nil
+  else
+    profiles_cache = {}
+  end
+end
 local ignored_dirs = {
   [".git"] = true,
   [".gradle"] = true,
@@ -49,7 +62,7 @@ local function read_state()
     return {}
   end
   local ok_decode, decoded = pcall(vim.json.decode, contents)
-  if not ok_decode or type(decoded) ~= "table" or vim.tbl_islist(decoded) then
+  if not ok_decode or type(decoded) ~= "table" or vim.islist(decoded) then
     return {}
   end
   -- Ignore malformed entries rather than allowing a bad state file to break
@@ -148,10 +161,16 @@ local function scan_modules(path, found)
 end
 
 function M.profiles(root)
-  local found = { default = true }
-  if root then
-    scan_modules(root, found)
+  root = normalized_root(root)
+  if not root then
+    return { "default" }
   end
+  if profiles_cache[root] then
+    return vim.deepcopy(profiles_cache[root])
+  end
+
+  local found = { default = true }
+  scan_modules(root, found)
   local profiles = vim.tbl_keys(found)
   table.sort(profiles, function(a, b)
     if a == b then
@@ -159,7 +178,8 @@ function M.profiles(root)
     end
     return a == "default" or (b ~= "default" and a < b)
   end)
-  return profiles
+  profiles_cache[root] = profiles
+  return vim.deepcopy(profiles)
 end
 
 function M.profile(root)
@@ -178,10 +198,10 @@ function M.profile(root)
 end
 
 function M.set_profile(root, profile)
+  root = normalized_root(root)
   if not root or not vim.tbl_contains(M.profiles(root), profile) then
     return false
   end
-  root = vim.fs.normalize(root)
   local state = read_state()
   state[root] = profile
   return write_state(state)

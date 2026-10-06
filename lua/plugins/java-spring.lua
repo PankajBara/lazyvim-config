@@ -44,11 +44,22 @@ return {
     dependencies = { "JavaHello/spring-boot.nvim" },
     init = function()
       local group = vim.api.nvim_create_augroup("JavaSpringJdtls", { clear = true })
+      local pending_requests = {}
+      local request_generation = {}
       vim.api.nvim_create_autocmd("BufWritePre", {
         group = group,
         pattern = "*.java",
         callback = function(args)
           local bufnr = args.buf
+          local changedtick = vim.api.nvim_buf_get_changedtick(bufnr)
+          request_generation[bufnr] = (request_generation[bufnr] or 0) + 1
+          local generation = request_generation[bufnr]
+          if pending_requests[bufnr] then
+            for client_id, request_id in pairs(pending_requests[bufnr]) do
+              vim.lsp.cancel_request(client_id, request_id)
+            end
+            pending_requests[bufnr] = nil
+          end
           local is_stopped = function(client)
             if type(client.is_stopped) == "function" then
               local ok, stopped = pcall(client.is_stopped, client)
@@ -86,8 +97,16 @@ return {
             },
           }
 
-          vim.lsp.buf_request_all(bufnr, "textDocument/codeAction", params, function(responses)
-            if not vim.api.nvim_buf_is_valid(bufnr) then
+          local request_ids = vim.lsp.buf_request_all(bufnr, "textDocument/codeAction", params, function(responses)
+            if request_generation[bufnr] ~= generation then
+              return
+            end
+            pending_requests[bufnr] = nil
+            if
+              not vim.api.nvim_buf_is_valid(bufnr)
+              or vim.api.nvim_buf_get_changedtick(bufnr) ~= changedtick
+              or vim.api.nvim_get_current_buf() ~= bufnr
+            then
               return
             end
             for client_id, response in pairs(responses or {}) do
@@ -108,6 +127,7 @@ return {
               pcall(require("jdtls").organize_imports)
             end
           end)
+          pending_requests[bufnr] = request_ids
         end,
       })
     end,
@@ -118,6 +138,11 @@ return {
           references = { includeDecompiledSources = true },
           implementationsCodeLens = { enabled = true },
           referencesCodeLens = { enabled = true },
+          inlayHints = {
+            enable = true,
+            parameterNames = { enabled = "all" },
+            variableTypes = true,
+          },
           completion = {
             importOrder = { "java", "javax", "org", "com" },
             guessMethodArguments = true,

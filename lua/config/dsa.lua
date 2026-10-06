@@ -12,9 +12,30 @@ local function run_cpp_task(name)
   end
 end
 
-vim.keymap.set("n", "<leader>rb", run_cpp_task("C++: Build Current File"),
-  { desc = "DSA: Build current C++ file" })
-vim.keymap.set("n", "<leader>rc", run_cpp_task("C++: Build and Run Current File"),
-  { desc = "DSA: Build and run current C++ file" })
-vim.keymap.set("n", "<leader>rt", run_cpp_task("C++: Build and Run with in.txt"),
-  { desc = "DSA: Build and run with in.txt" })
+local function setup_cpp_keymaps(args)
+  local opts = { buffer = args.buf }
+  vim.keymap.set(
+    "n",
+    "<leader>rb",
+    run_cpp_task("C++: Build Current File"),
+    vim.tbl_extend("force", opts, { desc = "DSA: Build current C++ file" })
+  )
+  vim.keymap.set(
+    "n",
+    "<leader>rc",
+    run_cpp_task("C++: Build and Run Current File"),
+    vim.tbl_extend("force", opts, { desc = "DSA: Build and run current C++ file" })
+  )
+  vim.keymap.set(
+    "n",
+    "<leader>rt",
+    run_cpp_task("C++: Build and Run with in.txt"),
+    vim.tbl_extend("force", opts, { desc = "DSA: Build and run with in.txt" })
+  )
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("WorkstationDsaKeymaps", { clear = true }),
+  pattern = { "cpp", "cc", "cxx" },
+  callback = setup_cpp_keymaps,
+})

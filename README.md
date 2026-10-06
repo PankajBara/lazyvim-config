@@ -54,6 +54,8 @@ Missing baseline requirements and unwritable required paths are errors. Missing 
 - Copilot language-server suggestions, CodeCompanion in-editor chat/inline edits (via the Copilot CLI), and Sidekick sessions for installed Codex, Claude, or Copilot CLIs
 - Multiple colorschemes, transparent highlights, optional Omarchy theme reload, and optional OSC 52/tmux/Wayland clipboard handling
 - Treesitter-based UI: sticky code context headers, Snacks indent guides and animated scope, rainbow delimiters, and extra language parsers
+- LSP inlay hints for clangd (C/C++) and jdtls (Java): parameter names, variable types, and method signatures render inline. `<leader>uh` is the master toggle
+- Editor polish: flash.nvim jumps, treesitter-textobject selects, persistent undo, and LSP CodeLens refresh with auto-refresh on insert leave
 
 Configured extras are recorded in [`lazyvim.json`](lazyvim.json); plugin versions are pinned in [`lazy-lock.json`](lazy-lock.json).
 
@@ -69,6 +71,16 @@ These build on LazyVim's Snacks and Treesitter stack and are safe under Omarchy'
 
 After pulling these changes, run `:Lazy` and press `S` to sync; the two new plugins (`nvim-treesitter-context` and `rainbow-delimiters.nvim`) require a network fetch on first install.
 
+## Editor enhancements
+
+These build on the LSP and Treesitter stack already used by LazyVim. No new highlight groups are introduced, so Omarchy's theme hot-reload continues to work.
+
+- **LSP inlay hints** (`lua/plugins/lsp-polish.lua`): clangd hints are enabled via `p00f/clangd_extensions.nvim` and JDTLS hints via its `extendedClientCapabilities.jdtls.inlayHintsProvider` plus a `settings.java.inlayHints` block. A shared `LspAttach` autocmd calls `vim.lsp.inlay_hint.enable(true, { bufnr })` for both clients as soon as they attach, so hints appear without manual `:LspInfo` work. `<leader>uh` (LazyVim default) is the master toggle.
+- **Persistent undo** (`lua/config/options.lua`): `vim.opt.undofile = true` and `vim.opt.undodir` set to `stdpath("data")/undo` (auto-created with `mkdir -p`). The undo dir lives under Neovim's data path so project directories stay clean and a single `.gitignore` is unaffected.
+- **Flash motions** (`lua/config/keymaps.lua`): `<leader>j` opens the flash jump picker across the buffer, `<leader>J` jumps forward only. Treesitter-aware jumps keep working through the LazyVim defaults.
+- **Treesitter-textobject selects** (`lua/config/keymaps.lua`): visual-mode binds on `<localleader>` (default `\`) select by code structure: `f`/`F` function, `c`/`C` class, `p`/`P` parameter, `a`/`A` block, outer first then inner. These complement the existing flash motions without colliding with `<leader>`-prefixed commands.
+- **CodeLens** (`lua/config/keymaps.lua`): `<leader>cl` refreshes the current buffer's CodeLens, `<leader>cL` runs the lens under the cursor, and an `InsertLeave` autocmd auto-refreshes lenses whenever an LSP client is attached to the buffer.
+
 ## Keymaps
 
 `<leader>` is Space. Press Space and pause to open which-key. Because upstream LazyVim bindings can change, `<leader>sk` is the authoritative searchable list of active mappings.
@@ -81,6 +93,14 @@ Java mappings are buffer-local and appear after JDTLS attaches.
 | --- | --- |
 | `jj` (insert mode) | Return to normal mode |
 | `<leader>rr` | Choose a project or current-file Overseer task |
+| `<leader>j` | Flash jump (any direction) |
+| `<leader>J` | Flash jump forward only |
+| `\` `f` / `\` `F` (visual mode) | Select outer/inner function via treesitter |
+| `\` `c` / `\` `C` (visual mode) | Select outer/inner class |
+| `\` `p` / `\` `P` (visual mode) | Select outer/inner parameter |
+| `\` `a` / `\` `A` (visual mode) | Select outer/inner block |
+| `<leader>cl` | Refresh LSP CodeLens for the current buffer |
+| `<leader>cL` | Run the CodeLens action under the cursor |
 | `<leader>ji` | Inspect the detected Java/Spring project (root, build system, profile, env source) in a panel |
 | `<leader>jp` | Select and persist a Spring profile |
 | `<leader>jr` | Run the Spring Boot application |
@@ -115,6 +135,7 @@ This compact list matches the pinned LazyVim version. It is intentionally not ex
 | --- | --- |
 | Files | `<leader>ff` project files, `<leader>fF` cwd files, `<leader>e` project tree |
 | Search | `<leader>sg` live grep, `<leader>sw` word/selection, `<leader>sb` buffer lines, `<leader>sk` keymaps |
+| Neo-tree | `/` or `D` search directories, `f` filter files and directories, `<C-x>` clear the filter |
 | Buffers | `<leader>,` picker, `<leader>bb` alternate buffer, `<leader>bd` delete buffer |
 | Windows | `<C-h/j/k/l>` move, `<leader>wd` close, `<leader>wm` zoom |
 | LSP | `gd` definition, `gr` references, `K` hover, `<leader>ca` code action, `<leader>cr` rename |
@@ -191,6 +212,7 @@ In tmux, SSH, or Herdr sessions, copies are emitted through OSC 52 for terminal/
 - [`init.lua`](init.lua): entry point
 - [`lua/config/lazy.lua`](lua/config/lazy.lua): plugin bootstrap and imports
 - [`lua/config/options.lua`](lua/config/options.lua): options and LazyVim root specification; global autoformat is disabled here
+- [`lua/plugins/lsp-polish.lua`](lua/plugins/lsp-polish.lua): LSP inlay hints and the shared `LspAttach` autocmd for clangd and jdtls
 - [`lua/workstation/`](lua/workstation): testable project-root, tool inventory, and health modules
 - [`lua/config/keymaps.lua`](lua/config/keymaps.lua) and [`lua/config/autocmds.lua`](lua/config/autocmds.lua): customization entry points
 - [`lua/plugins/`](lua/plugins): plugin specifications and integrations
@@ -209,6 +231,7 @@ nvim --clean --headless -l tests/spring_project.lua
 nvim --clean --headless -l tests/root_detection.lua
 nvim --clean --headless -l tests/task_output.lua
 nvim --clean --headless -l tests/health.lua
+nvim --clean --headless -l tests/lsp_polish.lua
 nvim --headless -u init.lua '+qa'
 stylua --check .
 git diff --check

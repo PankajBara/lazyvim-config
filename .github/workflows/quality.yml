@@ -36,7 +36,9 @@ jobs:
           nvim --clean --headless -l tests/spring_project.lua
           nvim --clean --headless -l tests/root_detection.lua
           nvim --clean --headless -l tests/task_output.lua
-          nvim --clean --headless -l tests/health.lua
+           nvim --clean --headless -l tests/health.lua
+           nvim --clean --headless -l tests/lsp_polish.lua
+
       - name: Cache pinned Lazy and Mason data
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:

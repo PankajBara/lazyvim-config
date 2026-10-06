@@ -57,6 +57,9 @@ function M.collect(overrides)
   add(results, compiler and "ok" or "error", compiler and "A C compiler is available" or "A C compiler is required")
 
   executable(results, ctx, "java", "warn")
+  for _, formatter in ipairs({ "stylua", "prettier", "google-java-format", "clang-format" }) do
+    executable(results, ctx, formatter, "info", "Optional formatter " .. formatter)
+  end
   local build_tool = ctx.executable("mvn") or ctx.executable("gradle")
   add(
     results,

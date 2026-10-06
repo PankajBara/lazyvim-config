@@ -84,6 +84,7 @@ assert_equal(spring.env(fixture .. "/maven"), {
 
 vim.fn.writefile({}, fixture .. "/maven/src/main/resources/application-prod.yml")
 vim.uv.fs_unlink(fixture .. "/maven/src/main/resources/application-prod.yml")
+spring.clear_profile_cache(fixture .. "/maven")
 assert_equal(spring.profile(fixture .. "/maven"), "default", "Stale profile fallback")
 assert_equal(spring.env(fixture .. "/maven").SPRING_PROFILES_ACTIVE, "from-dotenv", "Default keeps dotenv profile")
 
